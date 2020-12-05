@@ -1,0 +1,36 @@
+* {
+  box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  width: 100%; }
+
+body {
+  margin: 0;
+  background: linear-gradient(to bottom, #24829b 0%, #25417d 100%) no-repeat; }
+
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  color: white; }
+
+.content-wrapper {
+  display: grid;
+  grid-template-rows: 1fr 1fr; }
+  .content-wrapper .content-citiesAndImage-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr; }
+    .content-wrapper .content-citiesAndImage-wrapper .cities-wrapper {
+      text-align: center; }
+    .content-wrapper .content-citiesAndImage-wrapper .img-wrapper {
+      text-align: center; }
+  .content-wrapper .temp-wrapper {
+    display: grid;
+    grid-template-rows: 1fr 1fr; }
+    .content-wrapper .temp-wrapper .temp {
+      text-align: center; }
+    .content-wrapper .temp-wrapper .additionForTemp {
+      text-align: center; }
+
+
+/*# sourceMappingURL=style.css.map*/
