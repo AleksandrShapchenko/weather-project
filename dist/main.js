@@ -49,9 +49,34 @@ function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), des
         console.log(weather);
         let temp = Math.round(weather.main.temp);
         tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-        let desc = weather.weather[0].main;
+        let desc = weather.weather[0].description.split(' ')
+            .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
         descTempElem.innerHTML = `<p>${desc}</p>`;
-        /* Надо что-то решить с иконками */
+        let icon = weather.weather[0].icon;
+        loadIconOfWeather(icon);
+    });
+}
+/**
+ * loads icon
+ * @param icon
+ * @param img
+ */
+function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wrapper')) {
+    fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)
+        .then((res) => res.blob())
+        .then((icon) => {
+        // Проверка на наличие img
+        // Создание при первом запросе / изменение при следующих 
+        if (!(iconWrapper.querySelector('img'))) {
+            let img = document.createElement('img');
+            iconWrapper.append(img);
+            img.alt = "weather icon";
+            img.src = URL.createObjectURL(icon);
+        }
+        else {
+            let img = iconWrapper.querySelector('img');
+            img.src = URL.createObjectURL(icon);
+        }
     });
 }
 

@@ -48,9 +48,8 @@ function loadDataOfWeather(city: string,
 /**
  * loads icon 
  * @param icon 
- * @param img 
+ * @param [iconWrapper]
  */
-
 function loadIconOfWeather(icon: string,
     iconWrapper = document.querySelector('.icon-wrapper')): void {
     fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)
