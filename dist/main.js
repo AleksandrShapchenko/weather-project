@@ -23,19 +23,77 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 
+let selection;
+let city;
 document.addEventListener('DOMContentLoaded', () => {
-    const selection = document.querySelector('#city');
-    let city = selection.options[selection.selectedIndex].text;
+    // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
+    getCurrPositionUser();
+    selection = document.querySelector('#city');
+    city = selection.options[selection.selectedIndex].text;
     // Это выглядит больше как костыль, надо что-то придумать для подтягивания погоды
     // при первой загрузки
     loadDataOfWeather(city);
     // Следим за изменениями тега Select
     selection.addEventListener('change', (e) => {
-        let city = e.target;
-        city = city.options[city.selectedIndex].text;
+        let cityOption = e.target;
+        city = cityOption.options[cityOption.selectedIndex].text;
         loadDataOfWeather(city);
     });
+    // Запись последнего выбранного города в Local Storage
+    window.addEventListener('beforeunload', () => {
+        localStorage.setItem('city', city);
+    });
 });
+/**
+ * Handles location error
+ * @param browserHasGeolocation
+ */
+function handleLocationError(browserHasGeolocation) {
+    let msg = browserHasGeolocation ?
+        "Error: The Geolocation service failed"
+        : "Error: Your browser doesn't support geolocation.";
+    return msg;
+}
+/**
+ * Gets current position user
+ * @param [tempElem]
+ * @param [descTempElem]
+ */
+function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+                .then((response) => response.json())
+                .then((weather) => {
+                const optionElem = document.createElement('option');
+                optionElem.value = weather.name;
+                optionElem.innerHTML = weather.name;
+                optionElem.selected = true;
+                [].forEach.call(selection, (item) => {
+                    item.selected = false;
+                });
+                selection[0].before(optionElem);
+                let temp = Math.round(weather.main.temp);
+                tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+                let desc = weather.weather[0].description.split(' ')
+                    .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                descTempElem.innerHTML = `<p>${desc}</p>`;
+                let icon = weather.weather[0].icon;
+                loadIconOfWeather(icon);
+                city = weather.name;
+            });
+        }, () => {
+            console.error(handleLocationError(true));
+        });
+    }
+    else {
+        console.error(handleLocationError(false));
+    }
+}
 /**
  * Loads data of weather by selected city
  * @param city
@@ -46,7 +104,6 @@ function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), des
     fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
         .then((res) => res.json())
         .then((weather) => {
-        console.log(weather);
         let temp = Math.round(weather.main.temp);
         tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
         let desc = weather.weather[0].description.split(' ')
@@ -59,7 +116,7 @@ function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), des
 /**
  * loads icon
  * @param icon
- * @param img
+ * @param [iconWrapper]
  */
 function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wrapper')) {
     fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)

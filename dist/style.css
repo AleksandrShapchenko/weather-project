@@ -21,7 +21,8 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr; }
     .content-wrapper .content-citiesAndImage-wrapper .cities-wrapper {
-      text-align: center; }
+      text-align: center;
+      padding: 45px; }
     .content-wrapper .content-citiesAndImage-wrapper .icon-wrapper {
       text-align: center; }
   .content-wrapper .temp-wrapper {
