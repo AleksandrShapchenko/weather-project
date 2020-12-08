@@ -136,6 +136,33 @@ function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wra
         }
     });
 }
+class ModalComponent extends HTMLElement {
+    constructor() {
+        super();
+    }
+    connectedCallback() {
+        console.log('INIT');
+        this.attachShadow({
+            mode: "open"
+        });
+        const modalTmpl = document.querySelector('#modal');
+        console.log(modalTmpl);
+        // let template = modalTmpl.content.cloneNode(true);
+        // this.shadowRoot.append(template)
+        // // this.shadowRoot.innerHTML = `
+        // //     <p>TEXT</p>
+        // //     <style>
+        // //         p {
+        // //             color: green;
+        // //         }
+        // //     </style>
+        // // `;
+        // console.log(this.shadowRoot.querySelectorAll('*'));
+    }
+    disconnectedCallback() {
+    }
+}
+customElements.define('modal-component', ModalComponent);
 
 
 /***/ })

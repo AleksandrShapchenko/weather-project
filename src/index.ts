@@ -1,9 +1,13 @@
 import './style.scss';
+import { ModalComponent } from './classes/components/modalComponent.class';
 
 let selection: HTMLSelectElement;
 let city: string;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Обьявление компонента модалки
+    customElements.define('modal-component', ModalComponent);
+
     // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
     getCurrPositionUser();
 
@@ -48,49 +52,49 @@ function handleLocationError(browserHasGeolocation: boolean): string {
  */
 function getCurrPositionUser(tempElem = document.querySelector('.temp'),
     descTempElem = document.querySelector('.additionForTemp')) {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position: any) => {
-                    const pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position: any) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
 
-                    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-                        .then((response) => response.json())
-                        .then((weather) => {
-                            const optionElem = document.createElement('option');
-                            optionElem.value = weather.name;
-                            optionElem.innerHTML = weather.name;
-                            optionElem.selected = true; 
-                            
-                            [].forEach.call(selection, (item: HTMLOptionElement) => {
-                                item.selected = false;
-                            })
+                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+                    .then((response) => response.json())
+                    .then((weather) => {
+                        const optionElem = document.createElement('option');
+                        optionElem.value = weather.name;
+                        optionElem.innerHTML = weather.name;
+                        optionElem.selected = true;
 
-                            selection[0].before(optionElem);
-
-                            let temp = Math.round(weather.main.temp);
-                            tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-
-                            let desc = weather.weather[0].description.split(' ')
-                                .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                            descTempElem.innerHTML = `<p>${desc}</p>`;
-
-                            let icon = weather.weather[0].icon;
-                            loadIconOfWeather(icon);
-
-                            city = weather.name;
+                        [].forEach.call(selection, (item: HTMLOptionElement) => {
+                            item.selected = false;
                         })
-                },
-                () => {
-                    console.error(handleLocationError(true))
-                }
-            );
-        } else {
-            console.error(handleLocationError(false))
-        }
+
+                        selection[0].before(optionElem);
+
+                        let temp = Math.round(weather.main.temp);
+                        tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+
+                        let desc = weather.weather[0].description.split(' ')
+                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                        descTempElem.innerHTML = `<p>${desc}</p>`;
+
+                        let icon = weather.weather[0].icon;
+                        loadIconOfWeather(icon);
+
+                        city = weather.name;
+                    })
+            },
+            () => {
+                console.error(handleLocationError(true))
+            }
+        );
+    } else {
+        console.error(handleLocationError(false))
     }
+}
 
 /**
  * Loads data of weather by selected city
@@ -108,7 +112,7 @@ function loadDataOfWeather(city: string,
             tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 
             let desc = weather.weather[0].description.split(' ')
-            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
             descTempElem.innerHTML = `<p>${desc}</p>`;
 
             let icon = weather.weather[0].icon;
@@ -139,6 +143,6 @@ function loadIconOfWeather(icon: string,
                 let img = iconWrapper.querySelector('img');
                 img.src = URL.createObjectURL(icon);
             }
-            
+
         })
 }
