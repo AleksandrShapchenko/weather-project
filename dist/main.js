@@ -14,6 +14,70 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/classes/components/modalComponent.class.ts":
+/*!********************************************************!*
+  !*** ./src/classes/components/modalComponent.class.ts ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ModalComponent": () => /* binding */ ModalComponent
+/* harmony export */ });
+class ModalComponent extends HTMLElement {
+    constructor() {
+        super();
+    }
+    getCurrDate() {
+        return new Date();
+    }
+    getFormattedDate(date) {
+        const monthDayOption = {
+            month: 'short',
+            day: 'numeric',
+        };
+        const hoursMinutesOption = {
+            hour: 'numeric',
+            minute: 'numeric',
+        };
+        const monthDay = date.toLocaleString('en', monthDayOption);
+        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption);
+        // const formattedDate = `${hoursMinutes}, ${monthDay}`;
+        console.log(hoursMinutes, monthDay);
+        // return date.toLocaleString('en', options);
+    }
+    connectedCallback() {
+        let date = this.getInfoFromDate(this.getCurrDate());
+        console.log('INIT', this);
+        this.attachShadow({
+            mode: "open"
+        });
+        this.shadowRoot.innerHTML = `
+            <p><time>${date}</time></p>
+            <h2>City, Country</h2>
+
+
+            <style>
+                span {
+                    color: orange;
+                }
+
+                :host {
+                    display: inline-block;
+                    padding: 10px;
+                    background-color: aliceblue;
+                    color: black;
+                }
+            </style>
+        `;
+    }
+    disconnectedCallback() {
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*
   !*** ./src/index.ts ***!
@@ -22,10 +86,14 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
+/* harmony import */ var _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/components/modalComponent.class */ "./src/classes/components/modalComponent.class.ts");
+
 
 let selection;
 let city;
 document.addEventListener('DOMContentLoaded', () => {
+    // Обьявление компонента модалки
+    customElements.define('modal-component', _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
     // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
     getCurrPositionUser();
     selection = document.querySelector('#city');
@@ -136,33 +204,6 @@ function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wra
         }
     });
 }
-class ModalComponent extends HTMLElement {
-    constructor() {
-        super();
-    }
-    connectedCallback() {
-        console.log('INIT');
-        this.attachShadow({
-            mode: "open"
-        });
-        const modalTmpl = document.querySelector('#modal');
-        console.log(modalTmpl);
-        // let template = modalTmpl.content.cloneNode(true);
-        // this.shadowRoot.append(template)
-        // // this.shadowRoot.innerHTML = `
-        // //     <p>TEXT</p>
-        // //     <style>
-        // //         p {
-        // //             color: green;
-        // //         }
-        // //     </style>
-        // // `;
-        // console.log(this.shadowRoot.querySelectorAll('*'));
-    }
-    disconnectedCallback() {
-    }
-}
-customElements.define('modal-component', ModalComponent);
 
 
 /***/ })
@@ -193,6 +234,23 @@ customElements.define('modal-component', ModalComponent);
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports

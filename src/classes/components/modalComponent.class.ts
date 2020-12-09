@@ -4,20 +4,45 @@ export class ModalComponent extends HTMLElement {
         super()
     }
 
-    connectedCallback() {
-        console.log('INIT', this);
+    getCurrDate() {
+        return new Date();
+    }
 
+    getFormattedDate(date: Date) {
+        const monthDayOption = {
+            month: 'short',
+            day: 'numeric',
+        }
+
+        const hoursMinutesOption = {
+            hour: 'numeric',
+            minute: 'numeric',
+        }
+
+        const monthDay = date.toLocaleString('en', monthDayOption);
+        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption)
+        .slice(0, 4) + date.toLocaleString('en', hoursMinutesOption)
+        .slice(5).toLowerCase();
+        const formattedDate = `${hoursMinutes}, ${monthDay}`;
+
+        return formattedDate;
+    }
+
+    connectedCallback() {
+        let date = this.getFormattedDate(this.getCurrDate());
+        console.log('INIT', this);
+        
         this.attachShadow({
             mode: "open"
         });
 
         this.shadowRoot.innerHTML = `
-            <span>Data</span>
+            <p><time>${date}</time></p>
             <h2>City, Country</h2>
 
 
             <style>
-                span {
+                p {
                     color: orange;
                 }
 
