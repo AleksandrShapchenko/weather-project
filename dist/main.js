@@ -14,105 +14,74 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/classes/components/modalComponent.class.ts":
-/*!********************************************************!*
-  !*** ./src/classes/components/modalComponent.class.ts ***!
-  \********************************************************/
+/***/ "./src/Components/Select/componentSelect.ts":
+/*!**************************************************!*
+  !*** ./src/Components/Select/componentSelect.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ModalComponent": () => /* binding */ ModalComponent
+/* harmony export */   "default": () => /* binding */ ComponentSelect
 /* harmony export */ });
-class ModalComponent extends HTMLElement {
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+
+class ComponentSelect extends HTMLElement {
     constructor() {
         super();
     }
-    getCurrDate() {
-        return new Date();
-    }
-    getFormattedDate(date) {
-        const monthDayOption = {
-            month: 'short',
-            day: 'numeric',
-        };
-        const hoursMinutesOption = {
-            hour: 'numeric',
-            minute: 'numeric',
-        };
-        const monthDay = date.toLocaleString('en', monthDayOption);
-        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption)
-            .slice(0, 4) + date.toLocaleString('en', hoursMinutesOption)
-            .slice(5).toLowerCase();
-        const formattedDate = `${hoursMinutes}, ${monthDay}`;
-        return formattedDate;
-    }
     connectedCallback() {
-        let date = this.getFormattedDate(this.getCurrDate());
-        console.log('INIT', this);
         this.attachShadow({
             mode: "open"
         });
-        this.shadowRoot.innerHTML = `
-            <p><time>${date}</time></p>
-            <h2>City, Country</h2>
-
-
-            <style>
-                p {
-                    color: orange;
+        let template = document.getElementById('dropdown');
+        let content = template.content.cloneNode(true);
+        this.shadowRoot.append(content);
+        let option = document.querySelector('#city').children;
+        [].forEach.call(option, (item, index) => {
+            if (item.slot == "selected") {
+                this.selectedIndex = index;
+            }
+        });
+        this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
+            option[this.selectedIndex].slot = "item";
+            e.target.slot = "selected";
+            [].forEach.call(option, (item, index) => {
+                if (item.slot == "selected") {
+                    this.selectedIndex = index;
                 }
-
-                :host {
-                    display: inline-block;
-                    padding: 10px;
-                    background-color: aliceblue;
-                    color: black;
-                }
-            </style>
-        `;
+            });
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
+        this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
+            let selectedCity = option[this.selectedIndex].text;
+            (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__.loadDataOfWeather)(selectedCity);
+        });
+        this.shadowRoot.querySelector('slot[name="selected"]').onclick = () => {
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
     }
-    disconnectedCallback() {
+    disconnectedCallback() { }
+    static get observedAttributes() {
+        return [];
     }
+    attributeChangedCallback(attName, attPreVal, attCurrVal) { }
 }
 
 
 /***/ }),
 
-/***/ "./src/index.ts":
-/*!**********************!*
-  !*** ./src/index.ts ***!
-  \**********************/
+/***/ "./src/UtilsForWorkWithAPI/utils.ts":
+/*!******************************************!*
+  !*** ./src/UtilsForWorkWithAPI/utils.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
-/* harmony import */ var _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/components/modalComponent.class */ "./src/classes/components/modalComponent.class.ts");
-
-
-let selection;
-let city;
-document.addEventListener('DOMContentLoaded', () => {
-    // Обьявление компонента модалки
-    customElements.define('modal-component', _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
-    // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
-    getCurrPositionUser();
-    selection = document.querySelector('#city');
-    city = selection.options[selection.selectedIndex].text;
-    // Это выглядит больше как костыль, надо что-то придумать для подтягивания погоды
-    // при первой загрузки
-    loadDataOfWeather(city);
-    // Следим за изменениями тега Select
-    selection.addEventListener('change', (e) => {
-        let cityOption = e.target;
-        city = cityOption.options[cityOption.selectedIndex].text;
-        loadDataOfWeather(city);
-    });
-    // Запись последнего выбранного города в Local Storage
-    window.addEventListener('beforeunload', () => {
-        localStorage.setItem('city', city);
-    });
-});
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCurrPositionUser": () => /* binding */ getCurrPositionUser,
+/* harmony export */   "loadDataOfWeather": () => /* binding */ loadDataOfWeather
+/* harmony export */ });
 /**
  * Handles location error
  * @param browserHasGeolocation
@@ -139,13 +108,14 @@ function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTem
                 .then((response) => response.json())
                 .then((weather) => {
                 const optionElem = document.createElement('option');
-                optionElem.value = weather.name;
+                let selectedItem = document.querySelector('option[slot="selected"]');
+                selectedItem.slot = "item";
+                optionElem.slot = "selected";
                 optionElem.innerHTML = weather.name;
-                optionElem.selected = true;
-                [].forEach.call(selection, (item) => {
-                    item.selected = false;
-                });
-                selection[0].before(optionElem);
+                optionElem.title = "This is your current location";
+                optionElem.style.backgroundColor = "green";
+                optionElem.id = "userCurrentPosition";
+                selectedItem.before(optionElem);
                 let temp = Math.round(weather.main.temp);
                 tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
                 let desc = weather.weather[0].description.split(' ')
@@ -153,7 +123,7 @@ function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTem
                 descTempElem.innerHTML = `<p>${desc}</p>`;
                 let icon = weather.weather[0].icon;
                 loadIconOfWeather(icon);
-                city = weather.name;
+                // city = weather.name;
             });
         }, () => {
             console.error(handleLocationError(true));
@@ -205,6 +175,100 @@ function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wra
         }
     });
 }
+
+
+/***/ }),
+
+/***/ "./src/components/modalComponent.class.ts":
+/*!************************************************!*
+  !*** ./src/components/modalComponent.class.ts ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ModalComponent": () => /* binding */ ModalComponent
+/* harmony export */ });
+class ModalComponent extends HTMLElement {
+    constructor() {
+        super();
+    }
+    getCurrDate() {
+        return new Date();
+    }
+    getFormattedDate(date) {
+        const monthDayOption = {
+            month: 'short',
+            day: 'numeric',
+        };
+        const hoursMinutesOption = {
+            hour: 'numeric',
+            minute: 'numeric',
+        };
+        const monthDay = date.toLocaleString('en', monthDayOption);
+        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption)
+            .slice(0, 4) + date.toLocaleString('en', hoursMinutesOption)
+            .slice(5).toLowerCase();
+        const formattedDate = `${hoursMinutes}, ${monthDay}`;
+        return formattedDate;
+    }
+    connectedCallback() {
+        let date = this.getFormattedDate(this.getCurrDate());
+        console.log('INIT', this);
+        this.attachShadow({
+            mode: "open"
+        });
+        this.shadowRoot.innerHTML = `
+            <p><time>${date}</time></p>
+            <h2>City, Country</h2>
+
+            <style>
+                p {
+                    color: orange;
+                }
+
+                :host {
+                    display: inline-block;
+                    padding: 10px;
+                    background-color: aliceblue;
+                    color: black;
+                }
+            </style>
+        `;
+    }
+    disconnectedCallback() {
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
+/* harmony import */ var _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modalComponent.class */ "./src/components/modalComponent.class.ts");
+/* harmony import */ var _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/Select/componentSelect */ "./src/Components/Select/componentSelect.ts");
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+
+
+
+
+let city;
+document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
+    // Обьявление компонента модалки
+    customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
+    (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__.getCurrPositionUser)();
+    // Запись последнего выбранного города в Local Storage
+    window.addEventListener('beforeunload', () => {
+        localStorage.setItem('city', city);
+    });
+});
 
 
 /***/ })

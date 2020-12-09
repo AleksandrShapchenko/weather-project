@@ -20,7 +20,7 @@ main {
   .content-wrapper .content-citiesAndImage-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr; }
-    .content-wrapper .content-citiesAndImage-wrapper .cities-wrapper {
+    .content-wrapper .content-citiesAndImage-wrapper .dropdown-wrapper {
       text-align: center;
       padding: 45px; }
     .content-wrapper .content-citiesAndImage-wrapper .icon-wrapper {
