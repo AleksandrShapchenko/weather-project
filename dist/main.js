@@ -14,10 +14,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/classes/components/modalComponent.class.ts":
-/*!********************************************************!*
-  !*** ./src/classes/components/modalComponent.class.ts ***!
-  \********************************************************/
+/***/ "./src/components/modalComponent.class.ts":
+/*!************************************************!*
+  !*** ./src/components/modalComponent.class.ts ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -86,14 +86,14 @@ class ModalComponent extends HTMLElement {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
-/* harmony import */ var _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/components/modalComponent.class */ "./src/classes/components/modalComponent.class.ts");
+/* harmony import */ var _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modalComponent.class */ "./src/components/modalComponent.class.ts");
 
 
 let selection;
 let city;
 document.addEventListener('DOMContentLoaded', () => {
     // Обьявление компонента модалки
-    customElements.define('modal-component', _classes_components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
+    customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
     // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
     getCurrPositionUser();
     selection = document.querySelector('#city');
