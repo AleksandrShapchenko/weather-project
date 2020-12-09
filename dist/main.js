@@ -41,13 +41,14 @@ class ModalComponent extends HTMLElement {
             minute: 'numeric',
         };
         const monthDay = date.toLocaleString('en', monthDayOption);
-        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption);
-        // const formattedDate = `${hoursMinutes}, ${monthDay}`;
-        console.log(hoursMinutes, monthDay);
-        // return date.toLocaleString('en', options);
+        const hoursMinutes = date.toLocaleString('en', hoursMinutesOption)
+            .slice(0, 4) + date.toLocaleString('en', hoursMinutesOption)
+            .slice(5).toLowerCase();
+        const formattedDate = `${hoursMinutes}, ${monthDay}`;
+        return formattedDate;
     }
     connectedCallback() {
-        let date = this.getInfoFromDate(this.getCurrDate());
+        let date = this.getFormattedDate(this.getCurrDate());
         console.log('INIT', this);
         this.attachShadow({
             mode: "open"
@@ -58,7 +59,7 @@ class ModalComponent extends HTMLElement {
 
 
             <style>
-                span {
+                p {
                     color: orange;
                 }
 
