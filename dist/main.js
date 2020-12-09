@@ -14,6 +14,171 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/Components/Select/componentSelect.ts":
+/*!**************************************************!*
+  !*** ./src/Components/Select/componentSelect.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ ComponentSelect
+/* harmony export */ });
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+
+class ComponentSelect extends HTMLElement {
+    constructor() {
+        super();
+    }
+    connectedCallback() {
+        this.attachShadow({
+            mode: "open"
+        });
+        let template = document.getElementById('dropdown');
+        let content = template.content.cloneNode(true);
+        this.shadowRoot.append(content);
+        let option = document.querySelector('#city').children;
+        [].forEach.call(option, (item, index) => {
+            if (item.slot == "selected") {
+                this.selectedIndex = index;
+            }
+        });
+        this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
+            option[this.selectedIndex].slot = "item";
+            e.target.slot = "selected";
+            [].forEach.call(option, (item, index) => {
+                if (item.slot == "selected") {
+                    this.selectedIndex = index;
+                }
+            });
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
+        this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
+            let selectedCity = option[this.selectedIndex].text;
+            (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__.loadDataOfWeather)(selectedCity);
+        });
+        this.shadowRoot.querySelector('slot[name="selected"]').onclick = () => {
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
+    }
+    disconnectedCallback() { }
+    static get observedAttributes() {
+        return [];
+    }
+    attributeChangedCallback(attName, attPreVal, attCurrVal) { }
+}
+
+
+/***/ }),
+
+/***/ "./src/UtilsForWorkWithAPI/utils.ts":
+/*!******************************************!*
+  !*** ./src/UtilsForWorkWithAPI/utils.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCurrPositionUser": () => /* binding */ getCurrPositionUser,
+/* harmony export */   "loadDataOfWeather": () => /* binding */ loadDataOfWeather
+/* harmony export */ });
+/**
+ * Handles location error
+ * @param browserHasGeolocation
+ */
+function handleLocationError(browserHasGeolocation) {
+    let msg = browserHasGeolocation ?
+        "Error: The Geolocation service failed"
+        : "Error: Your browser doesn't support geolocation.";
+    return msg;
+}
+/**
+ * Gets current position user
+ * @param [tempElem]
+ * @param [descTempElem]
+ */
+function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+                .then((response) => response.json())
+                .then((weather) => {
+                const optionElem = document.createElement('option');
+                let selectedItem = document.querySelector('option[slot="selected"]');
+                selectedItem.slot = "item";
+                optionElem.slot = "selected";
+                optionElem.innerHTML = weather.name;
+                optionElem.title = "This is your current location";
+                optionElem.style.backgroundColor = "green";
+                optionElem.id = "userCurrentPosition";
+                selectedItem.before(optionElem);
+                let temp = Math.round(weather.main.temp);
+                tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+                let desc = weather.weather[0].description.split(' ')
+                    .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                descTempElem.innerHTML = `<p>${desc}</p>`;
+                let icon = weather.weather[0].icon;
+                loadIconOfWeather(icon);
+                // city = weather.name;
+            });
+        }, () => {
+            console.error(handleLocationError(true));
+        });
+    }
+    else {
+        console.error(handleLocationError(false));
+    }
+}
+/**
+ * Loads data of weather by selected city
+ * @param city
+ * @param [tempElem]
+ * @param [descTempElem]
+ */
+function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
+    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+        .then((res) => res.json())
+        .then((weather) => {
+        let temp = Math.round(weather.main.temp);
+        tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+        let desc = weather.weather[0].description.split(' ')
+            .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+        descTempElem.innerHTML = `<p>${desc}</p>`;
+        let icon = weather.weather[0].icon;
+        loadIconOfWeather(icon);
+    });
+}
+/**
+ * loads icon
+ * @param icon
+ * @param [iconWrapper]
+ */
+function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wrapper')) {
+    fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)
+        .then((res) => res.blob())
+        .then((icon) => {
+        // Проверка на наличие img
+        // Создание при первом запросе / изменение при следующих 
+        if (!(iconWrapper.querySelector('img'))) {
+            let img = document.createElement('img');
+            iconWrapper.append(img);
+            img.alt = "weather icon";
+            img.src = URL.createObjectURL(icon);
+        }
+        else {
+            let img = iconWrapper.querySelector('img');
+            img.src = URL.createObjectURL(icon);
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/components/modalComponent.class.ts":
 /*!************************************************!*
   !*** ./src/components/modalComponent.class.ts ***!
@@ -87,123 +252,23 @@ class ModalComponent extends HTMLElement {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modalComponent.class */ "./src/components/modalComponent.class.ts");
+/* harmony import */ var _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/Select/componentSelect */ "./src/Components/Select/componentSelect.ts");
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
 
 
-let selection;
+
+
 let city;
 document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
     // Обьявление компонента модалки
     customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
-    // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
-    getCurrPositionUser();
-    selection = document.querySelector('#city');
-    city = selection.options[selection.selectedIndex].text;
-    // Это выглядит больше как костыль, надо что-то придумать для подтягивания погоды
-    // при первой загрузки
-    loadDataOfWeather(city);
-    // Следим за изменениями тега Select
-    selection.addEventListener('change', (e) => {
-        let cityOption = e.target;
-        city = cityOption.options[cityOption.selectedIndex].text;
-        loadDataOfWeather(city);
-    });
+    (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__.getCurrPositionUser)();
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
         localStorage.setItem('city', city);
     });
 });
-/**
- * Handles location error
- * @param browserHasGeolocation
- */
-function handleLocationError(browserHasGeolocation) {
-    let msg = browserHasGeolocation ?
-        "Error: The Geolocation service failed"
-        : "Error: Your browser doesn't support geolocation.";
-    return msg;
-}
-/**
- * Gets current position user
- * @param [tempElem]
- * @param [descTempElem]
- */
-function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-                .then((response) => response.json())
-                .then((weather) => {
-                const optionElem = document.createElement('option');
-                optionElem.value = weather.name;
-                optionElem.innerHTML = weather.name;
-                optionElem.selected = true;
-                [].forEach.call(selection, (item) => {
-                    item.selected = false;
-                });
-                selection[0].before(optionElem);
-                let temp = Math.round(weather.main.temp);
-                tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-                let desc = weather.weather[0].description.split(' ')
-                    .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                descTempElem.innerHTML = `<p>${desc}</p>`;
-                let icon = weather.weather[0].icon;
-                loadIconOfWeather(icon);
-                city = weather.name;
-            });
-        }, () => {
-            console.error(handleLocationError(true));
-        });
-    }
-    else {
-        console.error(handleLocationError(false));
-    }
-}
-/**
- * Loads data of weather by selected city
- * @param city
- * @param [tempElem]
- * @param [descTempElem]
- */
-function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
-    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-        .then((res) => res.json())
-        .then((weather) => {
-        let temp = Math.round(weather.main.temp);
-        tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-        let desc = weather.weather[0].description.split(' ')
-            .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
-        descTempElem.innerHTML = `<p>${desc}</p>`;
-        let icon = weather.weather[0].icon;
-        loadIconOfWeather(icon);
-    });
-}
-/**
- * loads icon
- * @param icon
- * @param [iconWrapper]
- */
-function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wrapper')) {
-    fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)
-        .then((res) => res.blob())
-        .then((icon) => {
-        // Проверка на наличие img
-        // Создание при первом запросе / изменение при следующих 
-        if (!(iconWrapper.querySelector('img'))) {
-            let img = document.createElement('img');
-            iconWrapper.append(img);
-            img.alt = "weather icon";
-            img.src = URL.createObjectURL(icon);
-        }
-        else {
-            let img = iconWrapper.querySelector('img');
-            img.src = URL.createObjectURL(icon);
-        }
-    });
-}
 
 
 /***/ })

@@ -1,3 +1,5 @@
+@import './Components/Select/componentSelectStyle.scss';
+
 * {
     box-sizing: border-box;
 }
@@ -26,7 +28,7 @@ main {
         display: grid;
         grid-template-columns: 1fr 1fr;
 
-        .cities-wrapper {
+        .dropdown-wrapper {
             text-align: center;
             padding: 45px;
         }
