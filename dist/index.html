@@ -11,18 +11,18 @@
         <main>
             <div class="content-wrapper">
                 <div class="content-citiesAndImage-wrapper">
-                    <div class="cities-wrapper">
-                        <select name="cities" id="city">
-                            <option value="Kharkiv">Kharkiv</option>
-                            <option value="Kiev">Kiev</option>
-                            <option value="Moscow">Moscow</option>
-                            <option value="Minsk">Minsk</option>
-                            <option value="London">London</option>
-                        </select>
+                    <div class="dropdown-wrapper">
+                        <component-select id="city">
+                            <option slot="selected">Kharkiv</option>
+                            <option slot="item">Kiev</option>
+                            <option slot="item">Moscow</option>
+                            <option slot="item">Minsk</option>
+                            <option slot="item">London</option>
+                            <option slot="item">Paris</option>
+                            <option slot="item">Berlin</option>
+                        </component-select>
                     </div>
-                    <div class="icon-wrapper">
-                        
-                    </div>
+                    <div class="icon-wrapper"></div>
                 </div>
                 <div class="temp-wrapper">
                     <div class="temp">
@@ -34,6 +34,58 @@
                 </div>
             </div>
         </main>
+
+        <template id="dropdown">
+            <style>
+                .dropdown {
+                    position: relative;
+                    cursor: pointer;
+                    top: 0;
+                    left: 50%;
+                    right: 0;
+                }
+
+                .closed {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
+                .dropdown-list {
+                    position: absolute;
+                    top: 110%;
+                    left: 1%;
+                    right: 0;
+                }
+
+                .dropdown-list-item {
+                    margin-top: 5px;
+                }
+
+                ::slotted([slot="selected"]) {
+                    width: 150px;
+                    border: 1px solid black;
+                    border-radius: 8px;
+                    background-color: chartreuse;
+                }
+
+                ::slotted([slot="item"]) {
+                    margin-top: 3px;
+                    width: 150px;
+                    border-radius: 8px;
+                    background-color: darkgoldenrod;
+                }
+            </style>
+            <div class="dropdown">
+                <div class="dropdown-select">
+                    <slot name="selected"></slot>
+                </div>
+                <div class="dropdown-list closed">
+                    <div class="dropdown-list-item">
+                        <slot name="item"></slot>
+                    </div>
+                </div>
+            </div>
+        </template>
     <script src="main.js"></script></body>
 
 </html>

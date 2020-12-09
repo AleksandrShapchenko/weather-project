@@ -14,36 +14,74 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/index.ts":
-/*!**********************!*
-  !*** ./src/index.ts ***!
-  \**********************/
+/***/ "./src/Components/Select/componentSelect.ts":
+/*!**************************************************!*
+  !*** ./src/Components/Select/componentSelect.ts ***!
+  \**************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ ComponentSelect
+/* harmony export */ });
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
 
-let selection;
-let city;
-document.addEventListener('DOMContentLoaded', () => {
-    // Определяем текущию локацию посетителя (Нужно что-то сделать с ": any -> : Position")
-    getCurrPositionUser();
-    selection = document.querySelector('#city');
-    city = selection.options[selection.selectedIndex].text;
-    // Это выглядит больше как костыль, надо что-то придумать для подтягивания погоды
-    // при первой загрузки
-    loadDataOfWeather(city);
-    // Следим за изменениями тега Select
-    selection.addEventListener('change', (e) => {
-        let cityOption = e.target;
-        city = cityOption.options[cityOption.selectedIndex].text;
-        loadDataOfWeather(city);
-    });
-    // Запись последнего выбранного города в Local Storage
-    window.addEventListener('beforeunload', () => {
-        localStorage.setItem('city', city);
-    });
-});
+class ComponentSelect extends HTMLElement {
+    constructor() {
+        super();
+    }
+    connectedCallback() {
+        this.attachShadow({
+            mode: "open"
+        });
+        let template = document.getElementById('dropdown');
+        let content = template.content.cloneNode(true);
+        this.shadowRoot.append(content);
+        let option = document.querySelector('#city').children;
+        [].forEach.call(option, (item, index) => {
+            if (item.slot == "selected") {
+                this.selectedIndex = index;
+            }
+        });
+        this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
+            option[this.selectedIndex].slot = "item";
+            e.target.slot = "selected";
+            [].forEach.call(option, (item, index) => {
+                if (item.slot == "selected") {
+                    this.selectedIndex = index;
+                }
+            });
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
+        this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
+            let selectedCity = option[this.selectedIndex].text;
+            (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__.loadDataOfWeather)(selectedCity);
+        });
+        this.shadowRoot.querySelector('slot[name="selected"]').onclick = () => {
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        };
+    }
+    disconnectedCallback() { }
+    static get observedAttributes() {
+        return [];
+    }
+    attributeChangedCallback(attName, attPreVal, attCurrVal) { }
+}
+
+
+/***/ }),
+
+/***/ "./src/UtilsForWorkWithAPI/utils.ts":
+/*!******************************************!*
+  !*** ./src/UtilsForWorkWithAPI/utils.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getCurrPositionUser": () => /* binding */ getCurrPositionUser,
+/* harmony export */   "loadDataOfWeather": () => /* binding */ loadDataOfWeather
+/* harmony export */ });
 /**
  * Handles location error
  * @param browserHasGeolocation
@@ -70,13 +108,14 @@ function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTem
                 .then((response) => response.json())
                 .then((weather) => {
                 const optionElem = document.createElement('option');
-                optionElem.value = weather.name;
+                let selectedItem = document.querySelector('option[slot="selected"]');
+                selectedItem.slot = "item";
+                optionElem.slot = "selected";
                 optionElem.innerHTML = weather.name;
-                optionElem.selected = true;
-                [].forEach.call(selection, (item) => {
-                    item.selected = false;
-                });
-                selection[0].before(optionElem);
+                optionElem.title = "This is your current location";
+                optionElem.style.backgroundColor = "green";
+                optionElem.id = "userCurrentPosition";
+                selectedItem.before(optionElem);
                 let temp = Math.round(weather.main.temp);
                 tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
                 let desc = weather.weather[0].description.split(' ')
@@ -84,7 +123,7 @@ function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTem
                 descTempElem.innerHTML = `<p>${desc}</p>`;
                 let icon = weather.weather[0].icon;
                 loadIconOfWeather(icon);
-                city = weather.name;
+                // city = weather.name;
             });
         }, () => {
             console.error(handleLocationError(true));
@@ -138,6 +177,32 @@ function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wra
 }
 
 
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
+/* harmony import */ var _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Components/Select/componentSelect */ "./src/Components/Select/componentSelect.ts");
+/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+
+
+
+let city;
+document.addEventListener('DOMContentLoaded', () => {
+    customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_1__.default);
+    (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_2__.getCurrPositionUser)();
+    // Запись последнего выбранного города в Local Storage
+    window.addEventListener('beforeunload', () => {
+        localStorage.setItem('city', city);
+    });
+});
+
+
 /***/ })
 
 /******/ 	});
@@ -166,6 +231,23 @@ function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wra
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
