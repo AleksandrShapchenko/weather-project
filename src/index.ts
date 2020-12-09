@@ -1,5 +1,5 @@
 import './style.scss';
-import { ModalComponent } from './classes/components/modalComponent.class';
+import { ModalComponent } from './components/modalComponent.class';
 
 let selection: HTMLSelectElement;
 let city: string;

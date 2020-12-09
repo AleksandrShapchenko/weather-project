@@ -40,7 +40,6 @@ export class ModalComponent extends HTMLElement {
             <p><time>${date}</time></p>
             <h2>City, Country</h2>
 
-
             <style>
                 p {
                     color: orange;
