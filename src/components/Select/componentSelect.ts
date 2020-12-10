@@ -12,7 +12,7 @@ export default class ComponentSelect extends HTMLElement {
             mode: "open"
         });
 
-        let template: HTMLTemplateElement = document.getElementById('dropdown');
+        let template: HTMLTemplateElement = document.querySelector<HTMLTemplateElement>('#dropdown');
         let content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
 
@@ -24,9 +24,10 @@ export default class ComponentSelect extends HTMLElement {
             }
         })
 
-        this.shadowRoot.querySelector('slot[name="item"]').onclick = (e: EventTarget) => {
+        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]').onclick = (e: MouseEvent) => {
             option[this.selectedIndex].slot = "item";
-            e.target.slot = "selected";
+            let selectedSlot = e.target as HTMLSlotElement;
+            selectedSlot.slot = "selected";
 
             [].forEach.call(option, (item: HTMLOptionElement, index: number): void => {
                 if (item.slot == "selected") {
@@ -38,11 +39,11 @@ export default class ComponentSelect extends HTMLElement {
         }
 
         this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
-            let selectedCity = option[this.selectedIndex].text;
+            let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
 
             loadDataOfWeather(selectedCity);
         })
-        this.shadowRoot.querySelector('slot[name="selected"]').onclick = () => {
+        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]').onclick = () => {
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
     }

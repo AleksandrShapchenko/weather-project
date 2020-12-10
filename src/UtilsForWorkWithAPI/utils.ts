@@ -9,6 +9,12 @@ function handleLocationError(browserHasGeolocation: boolean): string {
     return msg;
 }
 
+interface Position {
+    coords: {
+        latitude: number,
+        longitude: number
+    }
+}
 
 /**
  * Gets current position user
@@ -19,13 +25,13 @@ export function getCurrPositionUser(tempElem = document.querySelector('.temp'),
     descTempElem = document.querySelector('.additionForTemp')) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            (position: Position) => {
-                const pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
+            (pos: Position) => {
+                const currpos = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
                 };
 
-                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${currpos.lat}&lon=${currpos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
                     .then((response) => response.json())
                     .then((weather) => {
                         const optionElem = document.createElement('option');

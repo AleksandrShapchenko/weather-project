@@ -34,7 +34,7 @@ class ComponentSelect extends HTMLElement {
         this.attachShadow({
             mode: "open"
         });
-        let template = document.getElementById('dropdown');
+        let template = document.querySelector('#dropdown');
         let content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
         let option = document.querySelector('#city').children;
@@ -45,7 +45,8 @@ class ComponentSelect extends HTMLElement {
         });
         this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
             option[this.selectedIndex].slot = "item";
-            e.target.slot = "selected";
+            let selectedSlot = e.target;
+            selectedSlot.slot = "selected";
             [].forEach.call(option, (item, index) => {
                 if (item.slot == "selected") {
                     this.selectedIndex = index;
@@ -99,12 +100,12 @@ function handleLocationError(browserHasGeolocation) {
  */
 function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const currpos = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude
             };
-            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
+            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${currpos.lat}&lon=${currpos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
                 .then((response) => response.json())
                 .then((weather) => {
                 const optionElem = document.createElement('option');
@@ -260,6 +261,7 @@ __webpack_require__.r(__webpack_exports__);
 
 let city;
 document.addEventListener('DOMContentLoaded', () => {
+    // Обьявление компонента select
     customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
     // Обьявление компонента модалки
     customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);

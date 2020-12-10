@@ -6,6 +6,7 @@ import { getCurrPositionUser } from './UtilsForWorkWithAPI/utils';
 let city: string;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Обьявление компонента select
     customElements.define('component-select', select);
     // Обьявление компонента модалки
     customElements.define('modal-component', ModalComponent);
