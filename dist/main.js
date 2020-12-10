@@ -24,38 +24,69 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ ComponentSelect
 /* harmony export */ });
-/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../index */ "./src/index.ts");
 
 class ComponentSelect extends HTMLElement {
     constructor() {
         super();
     }
-    connectedCallback() {
-        this.attachShadow({
-            mode: "open"
-        });
-        let template = document.getElementById('dropdown');
-        let content = template.content.cloneNode(true);
-        this.shadowRoot.append(content);
-        let option = document.querySelector('#city').children;
+    /**
+     * Sets selected index
+     * @param option
+     */
+    setSelectedIndex(option) {
         [].forEach.call(option, (item, index) => {
             if (item.slot == "selected") {
                 this.selectedIndex = index;
             }
         });
+    }
+    connectedCallback() {
+        this.attachShadow({
+            mode: "open"
+        });
+        let template = document.querySelector('#dropdown');
+        let content = template.content.cloneNode(true);
+        this.shadowRoot.append(content);
+        let option = document.querySelector('#city').children;
+        this.setSelectedIndex(option);
         this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
             option[this.selectedIndex].slot = "item";
-            e.target.slot = "selected";
-            [].forEach.call(option, (item, index) => {
-                if (item.slot == "selected") {
-                    this.selectedIndex = index;
-                }
-            });
+            let selectedSlot = e.target;
+            selectedSlot.slot = "selected";
+            this.setSelectedIndex(option);
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         };
         this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
             let selectedCity = option[this.selectedIndex].text;
-            (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_0__.loadDataOfWeather)(selectedCity);
+            _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.getWeatherByCityName(selectedCity)
+                .then((response) => response.json())
+                .then((weather) => {
+                let temp = Math.round(weather.main.temp);
+                _index__WEBPACK_IMPORTED_MODULE_0__.temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+                let desc = weather.weather[0].description.split(' ')
+                    .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                _index__WEBPACK_IMPORTED_MODULE_0__.descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+                let icon = weather.weather[0].icon;
+                _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.getIconOfWeather(icon)
+                    .then((response) => response.blob())
+                    .then((icon) => {
+                    if (!(_index__WEBPACK_IMPORTED_MODULE_0__.iconWrapper.querySelector('img'))) {
+                        let img = document.createElement('img');
+                        _index__WEBPACK_IMPORTED_MODULE_0__.iconWrapper.append(img);
+                        img.alt = "weather icon";
+                        img.src = URL.createObjectURL(icon);
+                    }
+                    else {
+                        let img = _index__WEBPACK_IMPORTED_MODULE_0__.iconWrapper.querySelector('img');
+                        img.src = URL.createObjectURL(icon);
+                    }
+                });
+                _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.selectedCity = weather.name;
+                _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.description = desc;
+                _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.temperature = temp;
+                _index__WEBPACK_IMPORTED_MODULE_0__.weatherWork.icon = icon;
+            });
         });
         this.shadowRoot.querySelector('slot[name="selected"]').onclick = () => {
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
@@ -66,114 +97,6 @@ class ComponentSelect extends HTMLElement {
         return [];
     }
     attributeChangedCallback(attName, attPreVal, attCurrVal) { }
-}
-
-
-/***/ }),
-
-/***/ "./src/UtilsForWorkWithAPI/utils.ts":
-/*!******************************************!*
-  !*** ./src/UtilsForWorkWithAPI/utils.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getCurrPositionUser": () => /* binding */ getCurrPositionUser,
-/* harmony export */   "loadDataOfWeather": () => /* binding */ loadDataOfWeather
-/* harmony export */ });
-/**
- * Handles location error
- * @param browserHasGeolocation
- */
-function handleLocationError(browserHasGeolocation) {
-    let msg = browserHasGeolocation ?
-        "Error: The Geolocation service failed"
-        : "Error: Your browser doesn't support geolocation.";
-    return msg;
-}
-/**
- * Gets current position user
- * @param [tempElem]
- * @param [descTempElem]
- */
-function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${pos.lat}&lon=${pos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-                .then((response) => response.json())
-                .then((weather) => {
-                const optionElem = document.createElement('option');
-                let selectedItem = document.querySelector('option[slot="selected"]');
-                selectedItem.slot = "item";
-                optionElem.slot = "selected";
-                optionElem.innerHTML = weather.name;
-                optionElem.title = "This is your current location";
-                optionElem.style.backgroundColor = "green";
-                optionElem.id = "userCurrentPosition";
-                selectedItem.before(optionElem);
-                let temp = Math.round(weather.main.temp);
-                tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-                let desc = weather.weather[0].description.split(' ')
-                    .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                descTempElem.innerHTML = `<p>${desc}</p>`;
-                let icon = weather.weather[0].icon;
-                loadIconOfWeather(icon);
-                // city = weather.name;
-            });
-        }, () => {
-            console.error(handleLocationError(true));
-        });
-    }
-    else {
-        console.error(handleLocationError(false));
-    }
-}
-/**
- * Loads data of weather by selected city
- * @param city
- * @param [tempElem]
- * @param [descTempElem]
- */
-function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), descTempElem = document.querySelector('.additionForTemp')) {
-    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-        .then((res) => res.json())
-        .then((weather) => {
-        let temp = Math.round(weather.main.temp);
-        tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-        let desc = weather.weather[0].description.split(' ')
-            .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
-        descTempElem.innerHTML = `<p>${desc}</p>`;
-        let icon = weather.weather[0].icon;
-        loadIconOfWeather(icon);
-    });
-}
-/**
- * loads icon
- * @param icon
- * @param [iconWrapper]
- */
-function loadIconOfWeather(icon, iconWrapper = document.querySelector('.icon-wrapper')) {
-    fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`)
-        .then((res) => res.blob())
-        .then((icon) => {
-        // Проверка на наличие img
-        // Создание при первом запросе / изменение при следующих 
-        if (!(iconWrapper.querySelector('img'))) {
-            let img = document.createElement('img');
-            iconWrapper.append(img);
-            img.alt = "weather icon";
-            img.src = URL.createObjectURL(icon);
-        }
-        else {
-            let img = iconWrapper.querySelector('img');
-            img.src = URL.createObjectURL(icon);
-        }
-    });
 }
 
 
@@ -250,25 +173,163 @@ class ModalComponent extends HTMLElement {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "weatherWork": () => /* binding */ weatherWork,
+/* harmony export */   "temperatureElem": () => /* binding */ temperatureElem,
+/* harmony export */   "descriptionOfTemperatureElem": () => /* binding */ descriptionOfTemperatureElem,
+/* harmony export */   "iconWrapper": () => /* binding */ iconWrapper
+/* harmony export */ });
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modalComponent.class */ "./src/components/modalComponent.class.ts");
 /* harmony import */ var _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/Select/componentSelect */ "./src/Components/Select/componentSelect.ts");
-/* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+/* harmony import */ var _storeServices_data_weatherService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./storeServices/data/weatherService */ "./src/storeServices/data/weatherService.ts");
 
 
 
 
-let city;
+const weatherWork = new _storeServices_data_weatherService__WEBPACK_IMPORTED_MODULE_3__.default();
+const temperatureElem = document.querySelector('.temp');
+const descriptionOfTemperatureElem = document.querySelector('.additionForTemp');
+const iconWrapper = document.querySelector('.icon-wrapper');
 document.addEventListener('DOMContentLoaded', () => {
+    // Обьявление компонента select
     customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
     // Обьявление компонента модалки
     customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
-    (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__.getCurrPositionUser)();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((posit) => {
+            console.log(posit);
+        });
+        // fetchedWeather = this.getWeatherByCoords({ lat: 49.972444, lng: 36.333536 });
+    }
+    weatherWork.getWeatherOfUserCurrentPosition()
+        .then((response) => response.json())
+        .then((weather) => {
+        const optionElem = document.createElement('option');
+        let selectedItem = document.querySelector('option[slot="selected"]');
+        selectedItem.slot = "item";
+        optionElem.slot = "selected";
+        optionElem.innerHTML = weather.name;
+        optionElem.title = "This is your current location";
+        optionElem.style.backgroundColor = "green";
+        optionElem.id = "userCurrentPosition";
+        selectedItem.before(optionElem);
+        let temp = Math.round(weather.main.temp);
+        temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+        let desc = weather.weather[0].description.split(' ')
+            .map((word) => word[0].toUpperCase() + word.substring(1)).join(' ');
+        descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+        let icon = weather.weather[0].icon;
+        weatherWork.getIconOfWeather(icon)
+            .then((response) => response.blob())
+            .then((icon) => {
+            if (!(iconWrapper.querySelector('img'))) {
+                let img = document.createElement('img');
+                iconWrapper.append(img);
+                img.alt = "weather icon";
+                img.src = URL.createObjectURL(icon);
+            }
+            else {
+                let img = iconWrapper.querySelector('img');
+                img.src = URL.createObjectURL(icon);
+            }
+        });
+        weatherWork.selectedCity = weather.name;
+        weatherWork.description = desc;
+        weatherWork.temperature = temp;
+        weatherWork.icon = icon;
+    });
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        localStorage.setItem('city', city);
+        weatherWork.loadCityToLocalStorage();
     });
 });
+
+
+/***/ }),
+
+/***/ "./src/storeServices/data/weatherService.ts":
+/*!**************************************************!*
+  !*** ./src/storeServices/data/weatherService.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ weatherService
+/* harmony export */ });
+class weatherService {
+    constructor() { }
+    getWeatherOfUserCurrentPosition() {
+        let fetchedWeather = null;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((poss) => {
+                console.log("Sdfsdsdfsdfsdfsdfdsfsdfdsfsfsdfsd");
+            });
+        }
+        return fetchedWeather;
+    }
+    /**
+     * Gets weather by coords
+     * @param position
+     * @returns weather by coords
+     */
+    getWeatherByCoords(position) {
+        let fetchedWeather = null;
+        try {
+            fetchedWeather = fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+        }
+        catch (error) {
+            throw Error('Error occured with fetch data of weather by coords -> ' + error);
+        }
+        return fetchedWeather;
+    }
+    /**
+     * Gets weather by city name
+     * @param city
+     * @returns
+     */
+    getWeatherByCityName(city) {
+        let fetchedWeather = null;
+        try {
+            fetchedWeather = fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+        }
+        catch (error) {
+            throw Error('Error occured with fetch data of weather by city name -> ' + error);
+        }
+        return fetchedWeather;
+    }
+    /**
+     * Gets icon of weather
+     * @param icon
+     * @returns icon of weather
+     */
+    getIconOfWeather(icon) {
+        let fetchedIconOfWeather = null;
+        try {
+            fetchedIconOfWeather = fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`);
+        }
+        catch (error) {
+            throw Error('Error occured with fetch icon of weather -> ' + error);
+        }
+        return fetchedIconOfWeather;
+    }
+    /**
+   * Handles location error
+   * @param browserHasGeolocation
+   */
+    handleLocationError(browserHasGeolocation) {
+        return browserHasGeolocation ?
+            "Error: The Geolocation service failed"
+            : "Error: Your browser doesn't support geolocation.";
+    }
+    /**
+     * Loads city to local storage
+     */
+    loadCityToLocalStorage() {
+        window.localStorage.setItem('city', this.selectedCity);
+    }
+}
 
 
 /***/ })
@@ -330,8 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	__webpack_require__("./src/index.ts");
-/******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
 //# sourceMappingURL=main.js.map
