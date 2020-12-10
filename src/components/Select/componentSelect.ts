@@ -7,6 +7,14 @@ export default class ComponentSelect extends HTMLElement {
 
     selectedIndex: number;
 
+    private setSelectedIndex(option: HTMLCollection) {
+        [].forEach.call(option, (item: HTMLOptionElement, index: number): void => {
+            if (item.slot == "selected") {
+                this.selectedIndex = index;
+            }
+        })
+    }
+
     connectedCallback() {
         this.attachShadow({
             mode: "open"
@@ -18,22 +26,14 @@ export default class ComponentSelect extends HTMLElement {
 
         let option = document.querySelector('#city').children;
         
-        [].forEach.call(option, (item: HTMLOptionElement, index: number): void => {
-            if(item.slot == "selected") {
-                this.selectedIndex = index;
-            }
-        })
+        this.setSelectedIndex(option);
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]').onclick = (e: MouseEvent) => {
             option[this.selectedIndex].slot = "item";
             let selectedSlot = e.target as HTMLSlotElement;
             selectedSlot.slot = "selected";
 
-            [].forEach.call(option, (item: HTMLOptionElement, index: number): void => {
-                if (item.slot == "selected") {
-                    this.selectedIndex = index;
-                }
-            });
+            this.setSelectedIndex(option);
 
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }

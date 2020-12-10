@@ -1,3 +1,6 @@
+import { Position } from '../storeServices/models/position.interface';
+import { city as cityService } from '../index';
+
 /**
  * Handles location error
  * @param browserHasGeolocation 
@@ -7,13 +10,6 @@ function handleLocationError(browserHasGeolocation: boolean): string {
         "Error: The Geolocation service failed"
         : "Error: Your browser doesn't support geolocation.";
     return msg;
-}
-
-interface Position {
-    coords: {
-        latitude: number,
-        longitude: number
-    }
 }
 
 /**
@@ -57,7 +53,7 @@ export function getCurrPositionUser(tempElem = document.querySelector('.temp'),
                         let icon = weather.weather[0].icon;
                         loadIconOfWeather(icon);
 
-                        // city = weather.name;
+                        cityService.selectedCity = weather.name;
                     })
             },
             () => {
@@ -90,6 +86,8 @@ export function loadDataOfWeather(city: string,
 
             let icon = weather.weather[0].icon;
             loadIconOfWeather(icon);
+
+            cityService.selectedCity = weather.name;
         })
 }
 

@@ -30,6 +30,13 @@ class ComponentSelect extends HTMLElement {
     constructor() {
         super();
     }
+    setSelectedIndex(option) {
+        [].forEach.call(option, (item, index) => {
+            if (item.slot == "selected") {
+                this.selectedIndex = index;
+            }
+        });
+    }
     connectedCallback() {
         this.attachShadow({
             mode: "open"
@@ -38,20 +45,12 @@ class ComponentSelect extends HTMLElement {
         let content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
         let option = document.querySelector('#city').children;
-        [].forEach.call(option, (item, index) => {
-            if (item.slot == "selected") {
-                this.selectedIndex = index;
-            }
-        });
+        this.setSelectedIndex(option);
         this.shadowRoot.querySelector('slot[name="item"]').onclick = (e) => {
             option[this.selectedIndex].slot = "item";
             let selectedSlot = e.target;
             selectedSlot.slot = "selected";
-            [].forEach.call(option, (item, index) => {
-                if (item.slot == "selected") {
-                    this.selectedIndex = index;
-                }
-            });
+            this.setSelectedIndex(option);
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         };
         this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
@@ -83,6 +82,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getCurrPositionUser": () => /* binding */ getCurrPositionUser,
 /* harmony export */   "loadDataOfWeather": () => /* binding */ loadDataOfWeather
 /* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
+
 /**
  * Handles location error
  * @param browserHasGeolocation
@@ -124,7 +125,7 @@ function getCurrPositionUser(tempElem = document.querySelector('.temp'), descTem
                 descTempElem.innerHTML = `<p>${desc}</p>`;
                 let icon = weather.weather[0].icon;
                 loadIconOfWeather(icon);
-                // city = weather.name;
+                _index__WEBPACK_IMPORTED_MODULE_0__.city.selectedCity = weather.name;
             });
         }, () => {
             console.error(handleLocationError(true));
@@ -151,6 +152,7 @@ function loadDataOfWeather(city, tempElem = document.querySelector('.temp'), des
         descTempElem.innerHTML = `<p>${desc}</p>`;
         let icon = weather.weather[0].icon;
         loadIconOfWeather(icon);
+        _index__WEBPACK_IMPORTED_MODULE_0__.city.selectedCity = weather.name;
     });
 }
 /**
@@ -251,16 +253,22 @@ class ModalComponent extends HTMLElement {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "city": () => /* binding */ city
+/* harmony export */ });
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./style.scss */ "./src/style.scss");
 /* harmony import */ var _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/modalComponent.class */ "./src/components/modalComponent.class.ts");
 /* harmony import */ var _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components/Select/componentSelect */ "./src/Components/Select/componentSelect.ts");
 /* harmony import */ var _UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UtilsForWorkWithAPI/utils */ "./src/UtilsForWorkWithAPI/utils.ts");
+/* harmony import */ var _storeServices_data_cityService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./storeServices/data/cityService */ "./src/storeServices/data/cityService.ts");
+
 
 
 
 
 let city;
 document.addEventListener('DOMContentLoaded', () => {
+    city = new _storeServices_data_cityService__WEBPACK_IMPORTED_MODULE_4__.city();
     // Обьявление компонента select
     customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
     // Обьявление компонента модалки
@@ -268,9 +276,28 @@ document.addEventListener('DOMContentLoaded', () => {
     (0,_UtilsForWorkWithAPI_utils__WEBPACK_IMPORTED_MODULE_3__.getCurrPositionUser)();
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        localStorage.setItem('city', city);
+        city.loadCityToLocalStorage();
     });
 });
+
+
+/***/ }),
+
+/***/ "./src/storeServices/data/cityService.ts":
+/*!***********************************************!*
+  !*** ./src/storeServices/data/cityService.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "city": () => /* binding */ city
+/* harmony export */ });
+class city {
+    loadCityToLocalStorage() {
+        window.localStorage.setItem('city', this.selectedCity);
+    }
+}
 
 
 /***/ })
@@ -332,8 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	__webpack_require__("./src/index.ts");
-/******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
 //# sourceMappingURL=main.js.map
