@@ -1,5 +1,5 @@
 import { Position } from '../storeServices/models/position.interface';
-import { city as cityService } from '../index';
+// import { city as cityService } from '../index';
 
 /**
  * Handles location error
@@ -17,8 +17,9 @@ function handleLocationError(browserHasGeolocation: boolean): string {
  * @param [tempElem] 
  * @param [descTempElem] 
  */
-export function getCurrPositionUser(tempElem = document.querySelector('.temp'),
-    descTempElem = document.querySelector('.additionForTemp')) {
+export function getCurrPositionUser(): Promise<Response> {
+    let fetchedWeather: Promise<Response>;
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos: Position) => {
@@ -27,34 +28,12 @@ export function getCurrPositionUser(tempElem = document.querySelector('.temp'),
                     lng: pos.coords.longitude
                 };
 
-                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${currpos.lat}&lon=${currpos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`)
-                    .then((response) => response.json())
-                    .then((weather) => {
-                        const optionElem = document.createElement('option');
-
-                        let selectedItem = document.querySelector('option[slot="selected"]');
-                        selectedItem.slot = "item";
-
-                        optionElem.slot = "selected";
-                        optionElem.innerHTML = weather.name;
-                        optionElem.title = "This is your current location";
-                        optionElem.style.backgroundColor = "green";
-                        optionElem.id = "userCurrentPosition";
-
-                        selectedItem.before(optionElem);
-
-                        let temp = Math.round(weather.main.temp);
-                        tempElem.innerHTML = `<p><b>${temp}</b> C</p>`;
-
-                        let desc = weather.weather[0].description.split(' ')
-                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                        descTempElem.innerHTML = `<p>${desc}</p>`;
-
-                        let icon = weather.weather[0].icon;
-                        loadIconOfWeather(icon);
-
-                        cityService.selectedCity = weather.name;
-                    })
+                try {
+                    fetchedWeather = fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${currpos.lat}&lon=${currpos.lng}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+                } catch (err) {
+                    fetchedWeather = null;
+                    console.log('Error occured with fetch data of weather -> ' + err);
+                }
             },
             () => {
                 console.error(handleLocationError(true))
@@ -63,6 +42,8 @@ export function getCurrPositionUser(tempElem = document.querySelector('.temp'),
     } else {
         console.error(handleLocationError(false))
     }
+
+    return fetchedWeather;
 }
 
 /**
@@ -87,7 +68,7 @@ export function loadDataOfWeather(city: string,
             let icon = weather.weather[0].icon;
             loadIconOfWeather(icon);
 
-            cityService.selectedCity = weather.name;
+            // cityService.selectedCity = weather.name;
         })
 }
 
