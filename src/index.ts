@@ -1,24 +1,27 @@
 import './style.scss';
-import { ModalComponent } from './components/modalComponent.class';
-import select from './Components/Select/componentSelect';
-import weatherService from './storeServices/data/weatherService';
+import { ModalComponent } from './components/modal/modalComponent.class';
+import { ComponentSelect } from './components/select/componentSelect';
+import { HTTPWeatherApiReq } from './classes/weatherApiReq.class';
+import { UserPositionService } from './storeServices/data/userPosition.service';
 
-
-export const weatherWork = new weatherService();
+export const positionService = new UserPositionService();
+export const weatherWork = new HTTPWeatherApiReq();
 export const temperatureElem: HTMLDivElement = document.querySelector('.temp');
 export const descriptionOfTemperatureElem: HTMLDivElement = document.querySelector('.additionForTemp');
 export const iconWrapper: HTMLDivElement = document.querySelector('.icon-wrapper');
 
 document.addEventListener('DOMContentLoaded', () => {
     // Обьявление компонента select
-    customElements.define('component-select', select);
+    customElements.define('component-select', ComponentSelect);
 
     // Обьявление компонента модалки
     customElements.define('modal-component', ModalComponent);
 
-    weatherWork.getCurrentUserPosition()
+    positionService.getCurrentUserPosition()
+        .then((position) => weatherWork.getWeatherByCoords(position))
         .then((response) => response.json())
         .then((weather) => {
+            console.log('getCurrentUserPosition return:', weather)
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');
@@ -27,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
             optionElem.slot = "selected";
             optionElem.innerHTML = weather.name;
             optionElem.title = "This is your current location";
-            optionElem.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
             optionElem.id = "userCurrentPosition";
 
             selectedItem.before(optionElem);

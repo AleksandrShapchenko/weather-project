@@ -1,43 +1,16 @@
-import { Position } from '../models/position.interface';
+import { Position } from '../storeServices/models/position.interface';
 
-export default class weatherService {
+export class HTTPWeatherApiReq {
   selectedCity: string;
   description: string;
   temperature: number;
   icon: string;
-
-  constructor() { }
-
-  /**
-   * Gets current user position
-   * @returns current user position 
-   */
-  async getCurrentUserPosition(): Promise<Response> {
-    let fetchedData: Promise<Response>; 
-
-    await new Promise((resolve, reject) => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position: Position) => {
-            resolve(position);
-          },
-          () => {
-            reject('error');
-            console.error(this.handleLocationError(true));
-          }
-        )
-      } else {
-        reject('error');
-        console.error(this.handleLocationError(false));
-      }
-    }).then((position: Position) => {
-      fetchedData = this.getWeatherByCoords(position);
-    })
-
-    return fetchedData; 
+  
+  constructor() { 
+    
   }
 
-  /**
+/**
    * Gets weather by coords
    * @param position 
    * @returns weather by coords 
@@ -59,6 +32,7 @@ export default class weatherService {
    * @param city 
    * @returns  
    */
+  
   getWeatherByCityName(city: string): Promise<Response> {
     let fetchedWeather: Promise<Response> = null;
 
@@ -71,7 +45,7 @@ export default class weatherService {
     return fetchedWeather;
   }
 
-  /**
+    /**
    * Gets icon of weather
    * @param icon 
    * @returns icon of weather 
@@ -88,17 +62,7 @@ export default class weatherService {
     return fetchedIconOfWeather;
   }
 
-  /**
- * Handles location error
- * @param browserHasGeolocation 
- */
-  private handleLocationError(browserHasGeolocation: boolean): string {
-    return browserHasGeolocation ?
-      "Error: The Geolocation service failed"
-      : "Error: Your browser doesn't support geolocation.";
-  }
-
-  /**
+    /**
    * Loads city to local storage
    */
   loadCityToLocalStorage(): void {
