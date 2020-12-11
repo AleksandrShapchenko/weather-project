@@ -2,7 +2,7 @@ import './style.scss';
 import { ModalComponent } from './components/modalComponent.class';
 import select from './Components/Select/componentSelect';
 import weatherService from './storeServices/data/weatherService';
-import { Position } from './storeServices/models/position.interface';
+
 
 export const weatherWork = new weatherService();
 export const temperatureElem: HTMLDivElement = document.querySelector('.temp');
@@ -16,16 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обьявление компонента модалки
     customElements.define('modal-component', ModalComponent);
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (posit: Position) => {
-                console.log(posit);
-            }
-        )
-        // fetchedWeather = this.getWeatherByCoords({ lat: 49.972444, lng: 36.333536 });
-    }
-
-    weatherWork.getWeatherOfUserCurrentPosition().then((response) => response.json()).then((weather) => {
+    weatherWork.getCurrentUserPosition()
+        .then((response) => response.json())
+        .then((weather) => {
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');
@@ -47,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
             let icon = weather.weather[0].icon;
-            
+
             weatherWork.getIconOfWeather(icon)
                 .then((response) => response.blob())
                 .then((icon) => {
@@ -61,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.src = URL.createObjectURL(icon);
                     }
                 });
-            
+
             weatherWork.selectedCity = weather.name;
             weatherWork.description = desc;
             weatherWork.temperature = temp;
