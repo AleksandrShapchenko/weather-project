@@ -1,4 +1,4 @@
-import { Position } from '../storeServices/models/position.interface';
+import { Position } from '../core/models/position.interface';
 
 export class HTTPWeatherApiReq {
   selectedCity: string;

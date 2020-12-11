@@ -2,7 +2,7 @@ import './style.scss';
 import { ModalComponent } from './components/modal/modalComponent.class';
 import { ComponentSelect } from './components/select/componentSelect';
 import { HTTPWeatherApiReq } from './classes/weatherApiReq.class';
-import { UserPositionService } from './storeServices/data/userPosition.service';
+import { UserPositionService } from './classes/services/userPosition.service';
 
 export const positionService = new UserPositionService();
 export const weatherWork = new HTTPWeatherApiReq();
