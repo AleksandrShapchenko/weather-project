@@ -19,7 +19,7 @@
                             <option slot="item">Minsk</option>
                             <option slot="item">London</option>
                             <option slot="item">Paris</option>
-                            <option slot="item">Berlin</option>
+                            <option slot="item" class="last-item">Berlin</option>
                         </component-select>
                     </div>
                     <div class="icon-wrapper"></div>
@@ -57,26 +57,29 @@
                 .dropdown-list {
                     position: absolute;
                     top: 110%;
-                    left: 1%;
+                    left: 0%;
                     right: 0;
                 }
 
-                .dropdown-list-item {
-                    margin-top: 5px;
-                }
-
-                ::slotted([slot="selected"]) {
+                ::slotted([slot="selected"]),
+                ::slotted([slot="item"]) {
                     width: 150px;
-                    border: 1px solid black;
-                    border-radius: 8px;
-                    background-color: chartreuse;
                 }
 
                 ::slotted([slot="item"]) {
-                    margin-top: 3px;
-                    width: 150px;
-                    border-radius: 8px;
-                    background-color: darkgoldenrod;
+                    border-top: 1px solid aliceblue;
+                    border-right: 1px solid aliceblue;
+                    border-left: 1px solid aliceblue;
+                }
+
+                ::slotted([slot="item"]:hover){
+                    background-color:rgba(0, 0, 0, 0.05);
+                }
+
+                ::slotted([class="last-item"]) {
+                    border-bottom: 1px solid aliceblue;
+                    border-bottom-right-radius: 8px;
+                    border-bottom-left-radius: 8px;
                 }
             </style>
             <div class="dropdown">

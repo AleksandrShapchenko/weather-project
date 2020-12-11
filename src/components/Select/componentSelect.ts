@@ -33,7 +33,10 @@ export default class ComponentSelect extends HTMLElement {
         this.setSelectedIndex(option);
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]').onclick = (e: MouseEvent) => {
+            option[option.length - 1].classList.remove('last-item');
+
             option[this.selectedIndex].slot = "item";
+            
             let selectedSlot = e.target as HTMLSlotElement;
             selectedSlot.slot = "selected";
 
@@ -84,8 +87,11 @@ export default class ComponentSelect extends HTMLElement {
     disconnectedCallback() {}
 
     static get observedAttributes(): Array<string> {
-        return [];
+        return ['class'];
     }
 
-    attributeChangedCallback(attName: string, attPreVal: string, attCurrVal: string) {}
+    attributeChangedCallback(attName: string, attPreVal: string, attCurrVal: string) {
+        // let option = document.querySelector('#city').children;
+        // option[option.length - 1].classList.add('last-item');
+    }
 }
