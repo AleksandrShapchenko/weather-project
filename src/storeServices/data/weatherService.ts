@@ -7,19 +7,34 @@ export default class weatherService {
   icon: string;
 
   constructor() { }
-  
-  getWeatherOfUserCurrentPosition(): Promise<Response> {
-    let fetchedWeather: Promise<Response> = null;
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (poss: Position) => {
-          console.log("Sdfsdsdfsdfsdfsdfdsfsdfdsfsfsdfsd")
-        }
-      )
-    }
+  /**
+   * Gets current user position
+   * @returns current user position 
+   */
+  async getCurrentUserPosition(): Promise<Response> {
+    let fetchedData: Promise<Response>; 
 
-    return fetchedWeather;
+    await new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position: Position) => {
+            resolve(position);
+          },
+          () => {
+            reject('error');
+            console.error(this.handleLocationError(true));
+          }
+        )
+      } else {
+        reject('error');
+        console.error(this.handleLocationError(false));
+      }
+    }).then((position: Position) => {
+      fetchedData = this.getWeatherByCoords(position);
+    })
+
+    return fetchedData; 
   }
 
   /**

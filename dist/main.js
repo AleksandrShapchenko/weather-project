@@ -196,13 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     customElements.define('component-select', _Components_Select_componentSelect__WEBPACK_IMPORTED_MODULE_2__.default);
     // Обьявление компонента модалки
     customElements.define('modal-component', _components_modalComponent_class__WEBPACK_IMPORTED_MODULE_1__.ModalComponent);
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((posit) => {
-            console.log(posit);
-        });
-        // fetchedWeather = this.getWeatherByCoords({ lat: 49.972444, lng: 36.333536 });
-    }
-    weatherWork.getWeatherOfUserCurrentPosition()
+    weatherWork.getCurrentUserPosition()
         .then((response) => response.json())
         .then((weather) => {
         const optionElem = document.createElement('option');
@@ -258,16 +252,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ weatherService
 /* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 class weatherService {
     constructor() { }
-    getWeatherOfUserCurrentPosition() {
-        let fetchedWeather = null;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((poss) => {
-                console.log("Sdfsdsdfsdfsdfsdfdsfsdfdsfsfsdfsd");
+    /**
+     * Gets current user position
+     * @returns current user position
+     */
+    getCurrentUserPosition() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let fetchedData;
+            yield new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        resolve(position);
+                    }, () => {
+                        reject('error');
+                        console.error(this.handleLocationError(true));
+                    });
+                }
+                else {
+                    reject('error');
+                    console.error(this.handleLocationError(false));
+                }
+            }).then((position) => {
+                fetchedData = this.getWeatherByCoords(position);
             });
-        }
-        return fetchedWeather;
+            return fetchedData;
+        });
     }
     /**
      * Gets weather by coords
