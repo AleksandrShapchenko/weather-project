@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then((position) => weatherWork.getWeatherByCoords(position))
         .then((response) => response.json())
         .then((weather) => {
-            console.log('getCurrentUserPosition return:', weather)
+            // console.log('getCurrentUserPosition return:', weather)
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');

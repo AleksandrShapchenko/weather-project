@@ -19,10 +19,12 @@
                             <option slot="item">Minsk</option>
                             <option slot="item">London</option>
                             <option slot="item">Paris</option>
-                            <option slot="item" class="last-item">Berlin</option>
+                            <option slot="last-item">Berlin</option>
                         </component-select>
                     </div>
-                    <div class="icon-wrapper"></div>
+                    <div class="icon-wrapper">
+
+                    </div>
                 </div>
                 <div class="temp-wrapper">
                     <div class="temp">
@@ -62,11 +64,24 @@
                 }
 
                 ::slotted([slot="selected"]),
-                ::slotted([slot="item"]) {
+                ::slotted([slot="item"]),
+                ::slotted([slot="last-item"]) {
                     width: 150px;
                 }
 
                 ::slotted([slot="selected"]) {
+                    border-top-right-radius: 8px;
+                    border-top-left-radius: 8px;
+                    
+                    border-top: 1px solid aliceblue;
+                    border-right: 1px solid aliceblue;
+                    border-left: 1px solid aliceblue;
+
+                    background-color:rgba(0, 0, 0, 0.05);
+                }
+
+                ::slotted([slot="item"]:hover),
+                ::slotted([slot="last-item"]:hover) {
                     background-color:rgba(0, 0, 0, 0.05);
                 }
 
@@ -76,11 +91,11 @@
                     border-left: 1px solid aliceblue;
                 }
 
-                ::slotted([slot="item"]:hover){
-                    background-color:rgba(0, 0, 0, 0.05);
-                }
+                ::slotted([slot="last-item"]) {
+                    border-top: 1px solid aliceblue;
+                    border-right: 1px solid aliceblue;
+                    border-left: 1px solid aliceblue;
 
-                ::slotted([class="last-item"]) {
                     border-bottom: 1px solid aliceblue;
                     border-bottom-right-radius: 8px;
                     border-bottom-left-radius: 8px;
@@ -93,6 +108,7 @@
                 <div class="dropdown-list closed">
                     <div class="dropdown-list-item">
                         <slot name="item"></slot>
+                        <slot name="last-item"></slot>
                     </div>
                 </div>
             </div>

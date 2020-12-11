@@ -7,10 +7,10 @@ export class UserPositionService {
     }
 
     /**
- * Gets current user position
- * @returns current user position 
- */
-    async getCurrentUserPosition(): Promise<Position> {
+   * Gets current user position
+   * @returns current user position 
+   */
+    getCurrentUserPosition(): Promise<Position> {
         return new Promise((resolve, reject) => {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -30,9 +30,9 @@ export class UserPositionService {
     }
 
     /**
- * Handles location error
- * @param browserHasGeolocation 
- */
+   * Handles location error
+   * @param browserHasGeolocation 
+   */
     private handleLocationError(browserHasGeolocation: boolean): string {
         return browserHasGeolocation ?
             "Error: The Geolocation service failed"

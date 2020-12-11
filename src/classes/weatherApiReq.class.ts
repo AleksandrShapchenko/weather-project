@@ -19,7 +19,9 @@ export class HTTPWeatherApiReq {
     let fetchedWeather: Promise<Response> = null;
 
     try {
-      fetchedWeather = fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+      fetchedWeather = fetch('http://api.openweathermap.org/data/2.5/weather?'
+        + `lat=${position.coords.latitude}&lon=${position.coords.longitude}&`
+        + 'units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636');
     } catch (error) {
       throw Error('Error occured with fetch data of weather by coords -> ' + error);
     }
@@ -35,9 +37,10 @@ export class HTTPWeatherApiReq {
   
   getWeatherByCityName(city: string): Promise<Response> {
     let fetchedWeather: Promise<Response> = null;
-
+    
     try {
-      fetchedWeather = fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+      fetchedWeather = fetch('http://api.openweathermap.org/data/2.5/weather?'
+        + `q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
     } catch (error) {
       throw Error('Error occured with fetch data of weather by city name -> ' + error);
     }

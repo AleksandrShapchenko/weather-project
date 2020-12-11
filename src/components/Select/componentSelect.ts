@@ -32,11 +32,10 @@ export class ComponentSelect extends HTMLElement {
         
         this.setSelectedIndex(option);
 
-        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]').onclick = (e: MouseEvent) => {
-            option[option.length - 1].classList.remove('last-item');
+        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="last-item"]')
+            .onclick = (e: MouseEvent) => {
+            option[this.selectedIndex].slot = "last-item";
 
-            option[this.selectedIndex].slot = "item";
-            
             let selectedSlot = e.target as HTMLSlotElement;
             selectedSlot.slot = "selected";
 
@@ -45,13 +44,26 @@ export class ComponentSelect extends HTMLElement {
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
 
-        this.shadowRoot.querySelector('slot[name="selected"]').addEventListener('slotchange', (e) => {
+        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]')
+            .onclick = (e: MouseEvent) => {
+            option[this.selectedIndex].slot = "item";
+
+            let selectedSlot = e.target as HTMLSlotElement;
+            selectedSlot.slot = "selected";
+
+            this.setSelectedIndex(option);
+
+            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+        }
+
+        this.shadowRoot.querySelector('slot[name="selected"]')
+            .addEventListener('slotchange', (e) => {
             let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
 
             weatherWork.getWeatherByCityName(selectedCity)
                 .then((response) => response.json())
                 .then((weather) => {
-                    console.log('getWeatherByCityName return:', weather)
+                    // console.log('getWeatherByCityName return:', weather)
                     let temp = Math.round(weather.main.temp);
                     temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 
@@ -79,8 +91,10 @@ export class ComponentSelect extends HTMLElement {
                     weatherWork.temperature = temp;
                     weatherWork.icon = icon;
                 });
-        })
-        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]').onclick = () => {
+            })
+        
+        this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
+            .onclick = () => {
             this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
     }
@@ -88,11 +102,9 @@ export class ComponentSelect extends HTMLElement {
     disconnectedCallback() {}
 
     static get observedAttributes(): Array<string> {
-        return ['class'];
+        return [];
     }
 
     attributeChangedCallback(attName: string, attPreVal: string, attCurrVal: string) {
-        // let option = document.querySelector('#city').children;
-        // option[option.length - 1].classList.add('last-item');
     }
 }
