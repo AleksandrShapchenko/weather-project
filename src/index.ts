@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             optionElem.slot = "selected";
             optionElem.innerHTML = weather.name;
             optionElem.title = "This is your current location";
-            optionElem.style.backgroundColor = "green";
+            optionElem.style.backgroundColor = "rgba(0, 0, 0, 0.05)";
             optionElem.id = "userCurrentPosition";
 
             selectedItem.before(optionElem);
