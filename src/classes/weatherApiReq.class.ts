@@ -1,10 +1,6 @@
 import { Position } from '../core/models/position.interface';
 
 export class HTTPWeatherApiReq {
-  selectedCity: string;
-  description: string;
-  temperature: number;
-  icon: string;
 
   constructor() {
 
@@ -64,11 +60,5 @@ export class HTTPWeatherApiReq {
 
     return fetchedIconOfWeather;
   }
-
-    /**
-   * Loads city to local storage
-   */
-  loadCityToLocalStorage(): void {
-    window.localStorage.setItem('city', this.selectedCity);
-  }
+  
 }

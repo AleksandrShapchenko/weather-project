@@ -3,6 +3,7 @@ import { ModalComponent } from './components/modal/modalComponent.class';
 import { ComponentSelect } from './components/select/componentSelect';
 import { HTTPWeatherApiReq } from './classes/weatherApiReq.class';
 import { UserPositionService } from './classes/services/userPosition.service';
+import { WeatherData } from './core/models/weather.interface';
 
 export const positionService = new UserPositionService();
 export const weatherReq = new HTTPWeatherApiReq();
@@ -39,15 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let desc = weather.weather[0].description.split(' ')
                 .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
             descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
-
-            weatherReq.selectedCity = weather.name;
-            weatherReq.description = desc;
-            weatherReq.temperature = temp;
             
             return weather.weather[0].icon;
 
         }).then((icon: string) => {
-            weatherReq.icon = icon;
             return weatherReq.getIconOfWeather(icon)
         })
         .then((response) => response.blob())
@@ -65,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        weatherReq.loadCityToLocalStorage();
-    })
+        let weather: WeatherData = JSON.parse(window.sessionStorage.getItem('weather'));
+        window.localStorage.setItem('city', weather.name);
+    });
 })

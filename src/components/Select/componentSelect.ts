@@ -69,14 +69,12 @@ export class ComponentSelect extends HTMLElement {
                     let desc = weather.weather[0].description.split(' ')
                         .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
                     descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+                       
+                    /* Set current data of weather into Session Storage */
+                    window.sessionStorage.setItem('weather', JSON.stringify(weather));
 
-                    weatherReq.selectedCity = weather.name;
-                    weatherReq.description = desc;
-                    weatherReq.temperature = temp;
-                        
                     return weather.weather[0].icon;
                 }).then((icon: string) => {
-                    weatherReq.icon = icon;
                     return weatherReq.getIconOfWeather(icon)
                 })
                 .then((response) => response.blob())
