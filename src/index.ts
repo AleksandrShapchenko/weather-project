@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             weatherReq.selectedCity = weather.name;
             weatherReq.description = desc;
             weatherReq.temperature = temp;
-            // ссылка на обьект weather
             
             return weather.weather[0].icon;
 
@@ -66,6 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        weatherReq.loadCityToLocalStorage('city', );
+        weatherReq.loadCityToLocalStorage();
     })
 })

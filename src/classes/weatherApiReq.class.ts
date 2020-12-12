@@ -65,11 +65,10 @@ export class HTTPWeatherApiReq {
     return fetchedIconOfWeather;
   }
 
-      /**
-    * Loads city to local storage
-    */
-   loadCityToLocalStorage(name: string, data: string): void {
-    window.localStorage.setItem(name, data);
+    /**
+   * Loads city to local storage
+   */
+  loadCityToLocalStorage(): void {
+    window.localStorage.setItem('city', this.selectedCity);
   }
-
 }
