@@ -63,7 +63,6 @@ export class ComponentSelect extends HTMLElement {
             weatherWork.getWeatherByCityName(selectedCity)
                 .then((response) => response.json())
                 .then((weather) => {
-                    // console.log('getWeatherByCityName return:', weather)
                     let temp = Math.round(weather.main.temp);
                     temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 

@@ -1,14 +1,13 @@
+import { dateService } from '../../classes/services/date.service'
+
 export class ModalComponent extends HTMLElement {
+    dateService = new dateService();
 
     constructor() {
         super()
     }
 
-    getCurrDate() {
-        return new Date();
-    }
-
-    getFormattedDate(date: Date) {
+    getFrmttdDateForMdl(date: Date) {
         const monthDayOption = {
             month: 'short',
             day: 'numeric',
@@ -29,7 +28,7 @@ export class ModalComponent extends HTMLElement {
     }
 
     connectedCallback() {
-        let date = this.getFormattedDate(this.getCurrDate());
+        let date = this.getFrmttdDateForMdl(this.dateService.getCurrDate());
         console.log('INIT', this);
         
         this.attachShadow({
