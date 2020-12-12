@@ -1,4 +1,4 @@
-import { weatherWork, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
+import { weatherReq, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
 
 export class ComponentSelect extends HTMLElement {
     constructor() {
@@ -24,11 +24,11 @@ export class ComponentSelect extends HTMLElement {
             mode: "open"
         });
 
-        let template: HTMLTemplateElement = document.querySelector<HTMLTemplateElement>('#dropdown');
-        let content = template.content.cloneNode(true);
+        const template: HTMLTemplateElement = document.querySelector<HTMLTemplateElement>('#dropdown');
+        const content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
 
-        let option = document.querySelector('#city').children;
+        const option = document.querySelector('#city').children;
         
         this.setSelectedIndex(option);
 
@@ -58,40 +58,40 @@ export class ComponentSelect extends HTMLElement {
 
         this.shadowRoot.querySelector('slot[name="selected"]')
             .addEventListener('slotchange', (e) => {
-                let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
-                
-                weatherWork.getWeatherByCityName(selectedCity)
-                    .then((response) => response.json())
-                    .then((weather) => {
-                        // console.log('getWeatherByCityName return:', weather)
-                        let temp = Math.round(weather.main.temp);
-                        temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+            let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
 
-                        let desc = weather.weather[0].description.split(' ')
-                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                        descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+            weatherReq.getWeatherByCityName(selectedCity)
+                .then((response) => response.json())
+                .then((weather) => {
+                    let temp = Math.round(weather.main.temp);
+                    temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 
-                        let icon = weather.weather[0].icon;
-                        weatherWork.getIconOfWeather(icon)
-                            .then((response) => response.blob())
-                            .then((icon) => {
-                                if (!(iconWrapper.querySelector('img'))) {
-                                    let img = document.createElement('img');
-                                    iconWrapper.append(img);
-                                    img.alt = "weather icon";
-                                    img.src = URL.createObjectURL(icon);
-                                } else {
-                                    let img = iconWrapper.querySelector('img');
-                                    img.src = URL.createObjectURL(icon);
-                                }
-                            });
+                    let desc = weather.weather[0].description.split(' ')
+                        .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                    descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-                        weatherWork.selectedCity = weather.name;
-                        weatherWork.description = desc;
-                        weatherWork.temperature = temp;
-                        weatherWork.icon = icon;
-                    });
+                    weatherReq.selectedCity = weather.name;
+                    weatherReq.description = desc;
+                    weatherReq.temperature = temp;
+                        
+                    return weather.weather[0].icon;
+                }).then((icon: string) => {
+                    weatherReq.icon = icon;
+                    return weatherReq.getIconOfWeather(icon)
                 })
+                .then((response) => response.blob())
+                .then((icon) => {
+                    if (!(iconWrapper.querySelector('img'))) {
+                        let img = document.createElement('img');
+                        iconWrapper.append(img);
+                        img.alt = "weather icon";
+                        img.src = URL.createObjectURL(icon);
+                    } else {
+                        let img = iconWrapper.querySelector('img');
+                        img.src = URL.createObjectURL(icon);
+                    }
+                });
+            })
         
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
             .onclick = () => {

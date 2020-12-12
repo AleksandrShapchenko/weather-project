@@ -5,7 +5,7 @@ import { HTTPWeatherApiReq } from './classes/weatherApiReq.class';
 import { UserPositionService } from './classes/services/userPosition.service';
 
 export const positionService = new UserPositionService();
-export const weatherWork = new HTTPWeatherApiReq();
+export const weatherReq = new HTTPWeatherApiReq();
 export const temperatureElem: HTMLDivElement = document.querySelector('.temp');
 export const descriptionOfTemperatureElem: HTMLDivElement = document.querySelector('.additionForTemp');
 export const iconWrapper: HTMLDivElement = document.querySelector('.icon-wrapper');
@@ -18,10 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     customElements.define('modal-component', ModalComponent);
 
     positionService.getCurrentUserPosition()
-        .then((position) => weatherWork.getWeatherByCoords(position))
+        .then((position) => weatherReq.getWeatherByCoords(position))
         .then((response) => response.json())
-        .then((weather) => {
-            // console.log('getCurrentUserPosition return:', weather)
+        .then((weather) => {         
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');
@@ -41,30 +40,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
             descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-            let icon = weather.weather[0].icon;
+            weatherReq.selectedCity = weather.name;
+            weatherReq.description = desc;
+            weatherReq.temperature = temp;
+            
+            return weather.weather[0].icon;
 
-            weatherWork.getIconOfWeather(icon)
-                .then((response) => response.blob())
-                .then((icon) => {
-                    if (!(iconWrapper.querySelector('img'))) {
-                        let img = document.createElement('img');
-                        iconWrapper.append(img);
-                        img.alt = "weather icon";
-                        img.src = URL.createObjectURL(icon);
-                    } else {
-                        let img = iconWrapper.querySelector('img');
-                        img.src = URL.createObjectURL(icon);
-                    }
-                });
-
-            weatherWork.selectedCity = weather.name;
-            weatherWork.description = desc;
-            weatherWork.temperature = temp;
-            weatherWork.icon = icon;
+        }).then((icon: string) => {
+            weatherReq.icon = icon;
+            return weatherReq.getIconOfWeather(icon)
         })
+        .then((response) => response.blob())
+        .then((icon) => {
+            if (!(iconWrapper.querySelector('img'))) {
+                let img = document.createElement('img');
+                iconWrapper.append(img);
+                img.alt = "weather icon";
+                img.src = URL.createObjectURL(icon);
+            } else {
+                let img = iconWrapper.querySelector('img');
+                img.src = URL.createObjectURL(icon);
+            }
+        });
 
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        weatherWork.loadCityToLocalStorage();
+        weatherReq.loadCityToLocalStorage();
     })
 })
