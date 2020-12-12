@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then((position) => weatherWork.getWeatherByCoords(position))
         .then((response) => response.json())
         .then((weather) => {
-            // console.log('getCurrentUserPosition return:', weather)
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');
@@ -41,8 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
             descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-            let icon = weather.weather[0].icon;
+            weatherWork.selectedCity = weather.name;
+            weatherWork.description = desc;
+            weatherWork.temperature = temp;
 
+            return weather.weather[0].icon;
+
+        }).then((icon: string) => {
             weatherWork.getIconOfWeather(icon)
                 .then((response) => response.blob())
                 .then((icon) => {
@@ -57,9 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-            weatherWork.selectedCity = weather.name;
-            weatherWork.description = desc;
-            weatherWork.temperature = temp;
             weatherWork.icon = icon;
         })
 

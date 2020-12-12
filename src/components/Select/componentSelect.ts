@@ -24,11 +24,11 @@ export class ComponentSelect extends HTMLElement {
             mode: "open"
         });
 
-        let template: HTMLTemplateElement = document.querySelector<HTMLTemplateElement>('#dropdown');
-        let content = template.content.cloneNode(true);
+        const template: HTMLTemplateElement = document.querySelector<HTMLTemplateElement>('#dropdown');
+        const content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
 
-        let option = document.querySelector('#city').children;
+        const option = document.querySelector('#city').children;
         
         this.setSelectedIndex(option);
 
