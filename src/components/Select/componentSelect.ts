@@ -1,4 +1,4 @@
-import { weatherWork, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
+import { weatherReq, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
 
 export class ComponentSelect extends HTMLElement {
     constructor() {
@@ -60,7 +60,7 @@ export class ComponentSelect extends HTMLElement {
             .addEventListener('slotchange', (e) => {
             let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
 
-            weatherWork.getWeatherByCityName(selectedCity)
+            weatherReq.getWeatherByCityName(selectedCity)
                 .then((response) => response.json())
                 .then((weather) => {
                     let temp = Math.round(weather.main.temp);
@@ -70,25 +70,26 @@ export class ComponentSelect extends HTMLElement {
                         .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
                     descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-                    let icon = weather.weather[0].icon;
-                    weatherWork.getIconOfWeather(icon)
-                        .then((response) => response.blob())
-                        .then((icon) => {
-                            if (!(iconWrapper.querySelector('img'))) {
-                                let img = document.createElement('img');
-                                iconWrapper.append(img);
-                                img.alt = "weather icon";
-                                img.src = URL.createObjectURL(icon);
-                            } else {
-                                let img = iconWrapper.querySelector('img');
-                                img.src = URL.createObjectURL(icon);
-                            }
-                        });
-
-                    weatherWork.selectedCity = weather.name;
-                    weatherWork.description = desc;
-                    weatherWork.temperature = temp;
-                    weatherWork.icon = icon;
+                    weatherReq.selectedCity = weather.name;
+                    weatherReq.description = desc;
+                    weatherReq.temperature = temp;
+                        
+                    return weather.weather[0].icon;
+                }).then((icon: string) => {
+                    weatherReq.icon = icon;
+                    return weatherReq.getIconOfWeather(icon)
+                })
+                .then((response) => response.blob())
+                .then((icon) => {
+                    if (!(iconWrapper.querySelector('img'))) {
+                        let img = document.createElement('img');
+                        iconWrapper.append(img);
+                        img.alt = "weather icon";
+                        img.src = URL.createObjectURL(icon);
+                    } else {
+                        let img = iconWrapper.querySelector('img');
+                        img.src = URL.createObjectURL(icon);
+                    }
                 });
             })
         

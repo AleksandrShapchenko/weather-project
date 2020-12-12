@@ -1,4 +1,5 @@
 import { dateService } from '../../classes/services/date.service'
+import { weatherReq } from '../../index';
 
 export class ModalComponent extends HTMLElement {
     dateService = new dateService();
@@ -6,8 +7,13 @@ export class ModalComponent extends HTMLElement {
     constructor() {
         super()
     }
-
-    getFrmttdDateForMdl(date: Date) {
+    
+    /**
+     * parses current date,
+     * returns farmatted date for modal
+     * @param date current date
+     */
+    getFrmttdDate(date: Date) {
         const monthDayOption = {
             month: 'short',
             day: 'numeric',
@@ -28,8 +34,7 @@ export class ModalComponent extends HTMLElement {
     }
 
     connectedCallback() {
-        let date = this.getFrmttdDateForMdl(this.dateService.getCurrDate());
-        console.log('INIT', this);
+        const date = this.getFrmttdDate(this.dateService.getCurrDate());
         
         this.attachShadow({
             mode: "open"
