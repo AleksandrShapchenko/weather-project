@@ -1,4 +1,5 @@
 import { weatherReq, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
+import { ModalComponent } from '../modal/modalComponent.class';
 
 export class ComponentSelect extends HTMLElement {
     constructor() {
@@ -17,6 +18,13 @@ export class ComponentSelect extends HTMLElement {
                 this.selectedIndex = index;
             }
         })
+    }
+
+    private refreshModalWindow() {
+        let modal: ModalComponent = document.querySelector('modal-component');
+        modal.remove();
+        let newModal = new ModalComponent();
+        document.querySelector('.content-wrapper').after(newModal);
     }
 
     connectedCallback() {
@@ -64,7 +72,7 @@ export class ComponentSelect extends HTMLElement {
                 .then((response) => response.json())
                 .then((weather) => {
                     let temp = Math.round(weather.main.temp);
-                    temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+                    temperatureElem.innerHTML = `<p><b>${temp}</b> &degC</p>`;
 
                     let desc = weather.weather[0].description.split(' ')
                         .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
@@ -88,6 +96,10 @@ export class ComponentSelect extends HTMLElement {
                         let img = iconWrapper.querySelector('img');
                         img.src = URL.createObjectURL(icon);
                     }
+     
+                    window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
+                }).then(() => {
+                    this.refreshModalWindow();
                 });
             })
         

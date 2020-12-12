@@ -13,12 +13,13 @@
                 <div class="content-citiesAndImage-wrapper">
                     <div class="dropdown-wrapper">
                         <component-select id="city">
-                            <option slot="selected">Kharkiv</option>
+                            <option slot="selected">Tokyo</option>
                             <option slot="item">Kiev</option>
                             <option slot="item">Moscow</option>
                             <option slot="item">Minsk</option>
                             <option slot="item">London</option>
                             <option slot="item">Paris</option>
+                            <option slot="item">New York</option>
                             <option slot="last-item">Berlin</option>
                         </component-select>
                     </div>
@@ -28,10 +29,10 @@
                 </div>
                 <div class="temp-wrapper">
                     <div class="temp">
-                        <p>1c</p>
+                        <p></p>
                     </div>
                     <div class="additionForTemp">
-                        <p>Mostly claudly</p>
+                        <p></p>
                     </div>
                 </div>
             </div>
@@ -40,6 +41,42 @@
                 
             </modal-component> 
         </main>
+
+        <template id="modalWindow">
+            <div class="time"></div>
+            <div class="location"></div>
+
+            <div class="temperature">
+                <div class="icon-wrapper"></div>
+                <div class="temp"></div>
+            </div>
+
+            <div class="detailsOfWeather">
+                <p class="description"></p>
+                <div class="details">
+                    <ul class="details-list">
+                        <li><img alt="weather icon" id="weather-icon"></li>
+                        <li><img alt="wind arrow" id="wind-arrow"></li>
+                        <li><img alt="pressure icon" id="pressure-icon"></li>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+
+            <style>
+                .temperature {
+                    display: inline-flex;
+                }
+                :host {
+                    display: inline-block;
+                    padding: 10px;
+                    background-color: #aaaaaa;
+                    color: black;
+                }
+            </style>
+        </template>
 
         <template id="dropdown">
             <style>

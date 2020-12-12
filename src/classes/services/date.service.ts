@@ -1,8 +1,7 @@
 export class dateService {
-    constructor() {
-
-    }
-        getCurrDate() {
-        return new Date();
+    constructor() { }
+    
+    getCurrDate(timestamp: number) {
+        return new Date(timestamp * 1000);
     }
 }
