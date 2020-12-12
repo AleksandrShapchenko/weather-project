@@ -34,68 +34,68 @@ export class ComponentSelect extends HTMLElement {
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="last-item"]')
             .onclick = (e: MouseEvent) => {
-            option[this.selectedIndex].slot = "last-item";
+                option[this.selectedIndex].slot = "last-item";
 
-            let selectedSlot = e.target as HTMLSlotElement;
-            selectedSlot.slot = "selected";
+                let selectedSlot = e.target as HTMLSlotElement;
+                selectedSlot.slot = "selected";
 
-            this.setSelectedIndex(option);
+                this.setSelectedIndex(option);
 
-            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]')
             .onclick = (e: MouseEvent) => {
-            option[this.selectedIndex].slot = "item";
+                option[this.selectedIndex].slot = "item";
 
-            let selectedSlot = e.target as HTMLSlotElement;
-            selectedSlot.slot = "selected";
+                let selectedSlot = e.target as HTMLSlotElement;
+                selectedSlot.slot = "selected";
 
-            this.setSelectedIndex(option);
+                this.setSelectedIndex(option);
 
-            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
 
         this.shadowRoot.querySelector('slot[name="selected"]')
             .addEventListener('slotchange', (e) => {
-            let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
+                let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
+                
+                weatherWork.getWeatherByCityName(selectedCity)
+                    .then((response) => response.json())
+                    .then((weather) => {
+                        // console.log('getWeatherByCityName return:', weather)
+                        let temp = Math.round(weather.main.temp);
+                        temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 
-            weatherWork.getWeatherByCityName(selectedCity)
-                .then((response) => response.json())
-                .then((weather) => {
-                    // console.log('getWeatherByCityName return:', weather)
-                    let temp = Math.round(weather.main.temp);
-                    temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
+                        let desc = weather.weather[0].description.split(' ')
+                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                        descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-                    let desc = weather.weather[0].description.split(' ')
-                        .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                    descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+                        let icon = weather.weather[0].icon;
+                        weatherWork.getIconOfWeather(icon)
+                            .then((response) => response.blob())
+                            .then((icon) => {
+                                if (!(iconWrapper.querySelector('img'))) {
+                                    let img = document.createElement('img');
+                                    iconWrapper.append(img);
+                                    img.alt = "weather icon";
+                                    img.src = URL.createObjectURL(icon);
+                                } else {
+                                    let img = iconWrapper.querySelector('img');
+                                    img.src = URL.createObjectURL(icon);
+                                }
+                            });
 
-                    let icon = weather.weather[0].icon;
-                    weatherWork.getIconOfWeather(icon)
-                        .then((response) => response.blob())
-                        .then((icon) => {
-                            if (!(iconWrapper.querySelector('img'))) {
-                                let img = document.createElement('img');
-                                iconWrapper.append(img);
-                                img.alt = "weather icon";
-                                img.src = URL.createObjectURL(icon);
-                            } else {
-                                let img = iconWrapper.querySelector('img');
-                                img.src = URL.createObjectURL(icon);
-                            }
-                        });
-
-                    weatherWork.selectedCity = weather.name;
-                    weatherWork.description = desc;
-                    weatherWork.temperature = temp;
-                    weatherWork.icon = icon;
-                });
-            })
+                        weatherWork.selectedCity = weather.name;
+                        weatherWork.description = desc;
+                        weatherWork.temperature = temp;
+                        weatherWork.icon = icon;
+                    });
+                })
         
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
             .onclick = () => {
-            this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
         }
     }
 
