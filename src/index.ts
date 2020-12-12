@@ -20,9 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     positionService.getCurrentUserPosition()
         .then((position) => weatherReq.getWeatherByCoords(position))
         .then((response) => response.json())
-        .then((weather) => {
-            console.log('weather in promise', weather);
-            
+        .then((weather) => {         
             const optionElem = document.createElement('option');
 
             let selectedItem = document.querySelector('option[slot="selected"]');
@@ -45,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             weatherReq.selectedCity = weather.name;
             weatherReq.description = desc;
             weatherReq.temperature = temp;
+            // ссылка на обьект weather
             
             return weather.weather[0].icon;
 
@@ -67,6 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Запись последнего выбранного города в Local Storage
     window.addEventListener('beforeunload', () => {
-        weatherReq.loadCityToLocalStorage();
+        weatherReq.loadCityToLocalStorage('city', );
     })
 })

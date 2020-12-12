@@ -1,5 +1,4 @@
 import { dateService } from '../../classes/services/date.service'
-import { weatherReq } from '../../index';
 
 export class ModalComponent extends HTMLElement {
     dateService = new dateService();

@@ -5,16 +5,16 @@ export class HTTPWeatherApiReq {
   description: string;
   temperature: number;
   icon: string;
-  
-  constructor() { 
-    
+
+  constructor() {
+
   }
 
-/**
-   * Gets weather by coords
-   * @param position 
-   * @returns weather by coords 
-   */
+  /**
+     * Gets weather by coords
+     * @param position 
+     * @returns weather by coords 
+     */
   getWeatherByCoords(position: Position): Promise<Response> {
     let fetchedWeather: Promise<Response> = null;
 
@@ -34,10 +34,10 @@ export class HTTPWeatherApiReq {
    * @param city 
    * @returns  
    */
-  
+
   getWeatherByCityName(city: string): Promise<Response> {
     let fetchedWeather: Promise<Response> = null;
-    
+
     try {
       fetchedWeather = fetch('http://api.openweathermap.org/data/2.5/weather?'
         + `q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
@@ -48,11 +48,11 @@ export class HTTPWeatherApiReq {
     return fetchedWeather;
   }
 
-    /**
-   * Gets icon of weather
-   * @param icon 
-   * @returns icon of weather 
-   */
+  /**
+ * Gets icon of weather
+ * @param icon 
+ * @returns icon of weather 
+ */
   getIconOfWeather(icon: string): Promise<Response> {
     let fetchedIconOfWeather: Promise<Response> = null;
 
@@ -61,14 +61,15 @@ export class HTTPWeatherApiReq {
     } catch (error) {
       throw Error('Error occured with fetch icon of weather -> ' + error);
     }
-    
+
     return fetchedIconOfWeather;
   }
 
-    /**
-   * Loads city to local storage
-   */
-  loadCityToLocalStorage(): void {
-    window.localStorage.setItem('city', this.selectedCity);
+      /**
+    * Loads city to local storage
+    */
+   loadCityToLocalStorage(name: string, data: string): void {
+    window.localStorage.setItem(name, data);
   }
+
 }
