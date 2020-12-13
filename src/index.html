@@ -1,155 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Weather</title>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+</head>
 
-    <body>
-        <main>
-            <div class="content-wrapper">
-                <div class="content-citiesAndImage-wrapper">
-                    <div class="dropdown-wrapper">
-                        <component-select id="city">
-                            <option slot="selected">Tokyo</option>
-                            <option slot="item">Kiev</option>
-                            <option slot="item">Moscow</option>
-                            <option slot="item">Minsk</option>
-                            <option slot="item">London</option>
-                            <option slot="item">Paris</option>
-                            <option slot="item">New York</option>
-                            <option slot="last-item">Berlin</option>
-                        </component-select>
-                    </div>
-                    <div class="icon-wrapper">
-
-                    </div>
+<body>
+    <main>
+        <div class="content-wrapper">
+            <div class="content-citiesAndImage-wrapper">
+                <div class="dropdown-wrapper">
+                    <component-select id="city">
+                        <option slot="selected">Tokyo</option>
+                        <option slot="item">Kiev</option>
+                        <option slot="item">Moscow</option>
+                        <option slot="item">Minsk</option>
+                        <option slot="item">London</option>
+                        <option slot="item">Paris</option>
+                        <option slot="item">New York</option>
+                        <option slot="last-item">Berlin</option>
+                    </component-select>
                 </div>
-                <div class="temp-wrapper">
-                    <div class="temp">
-                        <p></p>
-                    </div>
-                    <div class="additionForTemp">
-                        <p></p>
-                    </div>
+                <div class="icon-wrapper">
+
                 </div>
             </div>
-
-            <modal-component>
-                
-            </modal-component> 
-        </main>
-
-        <template id="modalWindow">
-            <div class="time"></div>
-            <div class="location"></div>
-
-            <div class="temperature">
-                <div class="icon-wrapper"></div>
-                <div class="temp"></div>
-            </div>
-
-            <div class="detailsOfWeather">
-                <p class="description"></p>
-                <div class="details">
-                    <ul class="details-list">
-                        <li><img alt="weather icon" id="weather-icon"></li>
-                        <li><img alt="wind arrow" id="wind-arrow"></li>
-                        <li><img alt="pressure icon" id="pressure-icon"></li>
-                        <li></li>
-                        <li></li>
-                        <li></li>
-                    </ul>
+            <div class="temp-wrapper">
+                <div class="temp">
+                    <p></p>
+                </div>
+                <div class="additionForTemp">
+                    <p></p>
                 </div>
             </div>
+        </div>
 
-            <style>
-                .temperature {
-                    display: inline-flex;
-                }
-                :host {
-                    display: inline-block;
-                    padding: 10px;
-                    background-color: #aaaaaa;
-                    color: black;
-                }
-            </style>
-        </template>
+        <modal-component>
 
-        <template id="dropdown">
-            <style>
-                .dropdown {
-                    position: relative;
-                    cursor: pointer;
-                    top: 0;
-                    left: 50%;
-                    right: 0;
-                }
+        </modal-component>
+    </main>
 
-                .closed {
-                    opacity: 0;
-                    visibility: hidden;
-                }
+    <template id="modalWindow">
+        <div class="time"></div>
+        <div class="location"></div>
 
-                .dropdown-list {
-                    position: absolute;
-                    top: 110%;
-                    left: 0%;
-                    right: 0;
-                }
+        <div class="temperature">
+            <div class="icon-wrapper"></div>
+            <div class="temp"></div>
+        </div>
 
-                ::slotted([slot="selected"]),
-                ::slotted([slot="item"]),
-                ::slotted([slot="last-item"]) {
-                    width: 150px;
-                }
+        <div class="detailsOfWeather">
+            <p class="description"></p>
+            <div class="details">
+                <ul class="details-list">
+                    <li><img alt="weather icon" id="weather-icon"></li>
+                    <li><img alt="wind arrow" id="wind-arrow"></li>
+                    <li><img alt="pressure icon" id="pressure-icon"></li>
+                    <li>ds</li>
+                    <li>ad</li>
+                    <li>ad</li>
+                </ul>
+            </div>
+        </div>
 
-                ::slotted([slot="selected"]) {
-                    border-top-right-radius: 8px;
-                    border-top-left-radius: 8px;
-                    
-                    border-top: 1px solid aliceblue;
-                    border-right: 1px solid aliceblue;
-                    border-left: 1px solid aliceblue;
+        <style>
+            .time {
+                color: orange;
+            }
 
-                    background-color:rgba(0, 0, 0, 0.05);
-                }
+            .temperature {
+                display: inline-flex;
+                background-color: rgba(255, 166, 0, 0.349);
+            }
 
-                ::slotted([slot="item"]:hover),
-                ::slotted([slot="last-item"]:hover) {
-                    background-color:rgba(0, 0, 0, 0.05);
-                }
+            :host {
+                display: inline-block;
+                padding: 10px;
+                background-color: aliceblue;
+                color: black;
+                border-radius: 15px;
+            }
 
-                ::slotted([slot="item"]) {
-                    border-top: 1px solid aliceblue;
-                    border-right: 1px solid aliceblue;
-                    border-left: 1px solid aliceblue;
-                }
+            .details-list {
+                display: flex;
+                flex-wrap: wrap;
+                list-style: none;
+                border-left: 2px solid orange;
+            }
 
-                ::slotted([slot="last-item"]) {
-                    border-top: 1px solid aliceblue;
-                    border-right: 1px solid aliceblue;
-                    border-left: 1px solid aliceblue;
+            .details-list li {
+                flex-grow: 0;
+                flex-shrink: 0;
+                flex-basis: auto;
+                width: 33.3333333333%;
+            }
+        </style>
+    </template>
 
-                    border-bottom: 1px solid aliceblue;
-                    border-bottom-right-radius: 8px;
-                    border-bottom-left-radius: 8px;
-                }
-            </style>
-            <div class="dropdown">
-                <div class="dropdown-select">
-                    <slot name="selected"></slot>
-                </div>
-                <div class="dropdown-list closed">
-                    <div class="dropdown-list-item">
-                        <slot name="item"></slot>
-                        <slot name="last-item"></slot>
-                    </div>
+    <template id="dropdown">
+        <style>
+            .dropdown {
+                position: relative;
+                cursor: pointer;
+                top: 0;
+                left: 50%;
+                right: 0;
+            }
+
+            .closed {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .dropdown-list {
+                position: absolute;
+                top: 110%;
+                left: 0%;
+                right: 0;
+            }
+
+            ::slotted([slot="selected"]),
+            ::slotted([slot="item"]),
+            ::slotted([slot="last-item"]) {
+                width: 150px;
+            }
+
+            ::slotted([slot="selected"]) {
+                border-top-right-radius: 8px;
+                border-top-left-radius: 8px;
+
+                border-top: 1px solid aliceblue;
+                border-right: 1px solid aliceblue;
+                border-left: 1px solid aliceblue;
+
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            ::slotted([slot="item"]:hover),
+            ::slotted([slot="last-item"]:hover) {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            ::slotted([slot="item"]) {
+                border-top: 1px solid aliceblue;
+                border-right: 1px solid aliceblue;
+                border-left: 1px solid aliceblue;
+            }
+
+            ::slotted([slot="last-item"]) {
+                border-top: 1px solid aliceblue;
+                border-right: 1px solid aliceblue;
+                border-left: 1px solid aliceblue;
+
+                border-bottom: 1px solid aliceblue;
+                border-bottom-right-radius: 8px;
+                border-bottom-left-radius: 8px;
+            }
+        </style>
+        <div class="dropdown">
+            <div class="dropdown-select">
+                <slot name="selected"></slot>
+            </div>
+            <div class="dropdown-list closed">
+                <div class="dropdown-list-item">
+                    <slot name="item"></slot>
+                    <slot name="last-item"></slot>
                 </div>
             </div>
-        </template>
-    </body>
+        </div>
+    </template>
+</body>
 
 </html>
