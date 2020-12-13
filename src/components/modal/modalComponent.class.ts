@@ -73,37 +73,6 @@ export class ModalComponent extends HTMLElement {
         let list = this.shadowRoot.querySelector('.details-list').children;
 
         console.log(list);
-
-        [].forEach.call(list, (li: HTMLLIElement, index: number) => {
-            switch (index) {
-                case 0: {
-                    let img = li.querySelector('img');
-                    img.style.width = "20px";
-                    img.style.height = "20px";
-                    img.src = iconUrl;
-
-                    let spanElem = document.createElement('span');
-                    spanElem.innerHTML = `${weather}`
-                    img.after()
-                    break;
-                }
-                case 1: {
-                    break;
-                }
-                case 2: {
-                    break;
-                }
-                case 3: {
-                    break;
-                }
-                case 4: {
-                    break;
-                }
-                case 5: {
-                    break;
-                }
-            }
-        })
     }
 
     disconnectedCallback() { }
