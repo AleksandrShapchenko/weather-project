@@ -1,15 +1,25 @@
 import './style.scss';
+
+// Custom Components
 import { ModalComponent } from './components/modal/modalComponent.class';
 import { ComponentSelect } from './components/select/componentSelect';
-import { HTTPWeatherApiReq } from './classes/weatherApiReq.class';
-import { UserPositionService } from './classes/services/userPosition.service';
-import { WeatherData } from './core/models/weather.interface';
 
+// Services
+import { HTTPWeatherApiReq } from './core/services/weatherAPI.service';
+import { UserPositionService } from './core/services/userPosition.service';
+
+// Interfaces
+import { WeatherData } from './core/models/weatherData.interface';
+
+// Services
 export const positionService = new UserPositionService();
 export const weatherReq = new HTTPWeatherApiReq();
+
+// Elements from DOM
 export const temperatureElem: HTMLDivElement = document.querySelector('.temp');
 export const descriptionOfTemperatureElem: HTMLDivElement = document.querySelector('.additionForTemp');
 export const iconWrapper: HTMLDivElement = document.querySelector('.icon-wrapper');
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Обьявление компонента select

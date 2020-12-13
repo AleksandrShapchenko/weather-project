@@ -1,5 +1,5 @@
-import { dateService } from '../../classes/services/date.service'
-import { WeatherData } from '../../core/models/weather.interface';
+import { dateService } from '../../core/services/date.service'
+import { WeatherData } from '../../core/models/weatherData.interface';
 
 export class ModalComponent extends HTMLElement {
     dateService = new dateService();

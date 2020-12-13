@@ -1,4 +1,4 @@
-import { Position } from '../../core/models/position.interface';
+import { Position } from '../models/position.interface';
 
 export class UserPositionService {
 
