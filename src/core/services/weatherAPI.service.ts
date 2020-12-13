@@ -19,7 +19,7 @@ export class HTTPWeatherApiReq {
     let fetchedWeather: Promise<Response> = null;
 
     try {
-      fetchedWeather = fetch(baseWeatherURL +
+      fetchedWeather = fetch(baseWeatherURL.baseURL +
         `lat=${position.coords.latitude}&lon=${position.coords.longitude}&` +
         `units=metric&appid=${id}`);
     } catch (error) {
@@ -39,7 +39,7 @@ export class HTTPWeatherApiReq {
     let fetchedWeather: Promise<Response> = null;
 
     try {
-      fetchedWeather = fetch(baseWeatherURL + `q=${city}&units=metric&appid=${id}`);
+      fetchedWeather = fetch(baseWeatherURL.baseURL + `q=${city}&units=metric&appid=${id}`);
     } catch (error) {
       throw Error('Error occured with fetch data of weather by city name -> ' + error);
     }
@@ -56,7 +56,7 @@ export class HTTPWeatherApiReq {
     let fetchedIconOfWeather: Promise<Response> = null;
 
     try {
-      fetchedIconOfWeather = fetch(baseIconURL + `${icon}@2x.png`);
+      fetchedIconOfWeather = fetch(baseIconURL.baseURL + `${icon}@2x.png`);
     } catch (error) {
       throw Error('Error occured with fetch icon of weather -> ' + error);
     }

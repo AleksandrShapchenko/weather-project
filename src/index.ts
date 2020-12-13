@@ -1,8 +1,8 @@
 import './style.scss';
 
 // Custom Components
-import { ModalComponent } from './components/modal/modalComponent.class';
-import { ComponentSelect } from './components/select/componentSelect';
+import { ModalComponent } from './Components/modal/modal.component';
+import { ComponentSelect } from './Components/Select/select.component';
 
 // Services
 import { HTTPWeatherApiReq } from './core/services/weatherAPI.service';

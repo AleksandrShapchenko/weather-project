@@ -1,5 +1,5 @@
 import { weatherReq, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
-import { ModalComponent } from '../modal/modalComponent.class';
+import { ModalComponent } from '../modal/modal.component';
 
 export class ComponentSelect extends HTMLElement {
     constructor() {

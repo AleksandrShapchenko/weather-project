@@ -71,8 +71,6 @@ export class ModalComponent extends HTMLElement {
              &degC. ${weather.weather[0].main}. ${weather.weather[0].description}`;
         
         let list = this.shadowRoot.querySelector('.details-list').children;
-
-        console.log(list);
     }
 
     disconnectedCallback() { }
