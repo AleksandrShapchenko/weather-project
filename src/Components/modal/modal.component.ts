@@ -79,7 +79,7 @@ export class ModalComponent extends HTMLElement {
         time.innerHTML = `<time>${date}</time>`;
 
         let loc: HTMLDivElement = this.shadowRoot.querySelector('.location');
-        loc.innerHTML = `<b>${location.city}, ${location.country}</b>`;
+        loc.innerHTML = `<span>${location.city}, ${location.country}</span>`;
 
         let img = document.createElement('img');
         this.shadowRoot.querySelector('.icon-wrapper').append(img);
