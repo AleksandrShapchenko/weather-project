@@ -1,5 +1,6 @@
 import { dateService } from '../../core/services/date.service'
 import { WeatherData } from '../../core/models/weatherData.interface';
+// import arrowIcon from '../../../assets/arrow.png';
 
 export class ModalComponent extends HTMLElement {
     dateService = new dateService();
@@ -13,7 +14,7 @@ export class ModalComponent extends HTMLElement {
      * returns formatted date for modal
      * @param date current date
      */
-    getFormattedDate(date: Date) {
+    private getFormattedDate(date: Date) {
         const monthDayOption = {
             month: 'short',
             day: 'numeric',
@@ -37,9 +38,7 @@ export class ModalComponent extends HTMLElement {
         let img = document.createElement('img');
 
         if(imgURL) {
-            img.style.display = "inline-block";
-            img.style.width = "25px";
-            img.style.height = "25px";
+            img.style.width = "30%";
             img.src = imgURL;
         }
 
@@ -50,6 +49,7 @@ export class ModalComponent extends HTMLElement {
 
             let span = document.createElement('span');
             span.innerHTML = text;
+
             li.append(span);
         } else {
             li.innerHTML = text;
@@ -92,8 +92,8 @@ export class ModalComponent extends HTMLElement {
         this.shadowRoot.querySelector('.temp').innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
         this.shadowRoot.querySelector('.description')
-            .innerHTML = `Feels like ${Math.round(weather?.main.feels_like)}
-             &degC. ${weather?.weather[0].main}. ${weather?.weather[0].description}`;
+            .innerHTML = `<b>Feels like ${Math.round(weather?.main.feels_like)}&deg
+             C. ${weather?.weather[0].main}. ${weather?.weather[0].description}</b>`;
         
         let { rain, snow, wind, main, visibility } = weather;
 
@@ -104,21 +104,20 @@ export class ModalComponent extends HTMLElement {
         } else if (snow) {
             this.appendLiElementTo(details, <string>snow["1h"] + 'mm/h', iconUrl);
         } 
-
-        this.appendLiElementTo(details, <string>wind.speed + 'm/s ESE');
-        this.appendLiElementTo(details, <string>main.pressure + 'hPa');
+// transform: rotate(300deg);
+        this.appendLiElementTo(details, <string>wind.speed + ' m/s ESE');
+        this.appendLiElementTo(details, <string>main.pressure + ' hPa');
         this.appendLiElementTo(details, 'Humidity: ' + <string>main.humidity + '%');
-        this.appendLiElementTo(details, 'Dew point: ' + <string>main.temp + '&deg C');
+        this.appendLiElementTo(details, 'Dew point: ' + new String(Math.round(<number>main.temp)) + '&deg C');
         this.appendLiElementTo(details, 'Visibility: ' + new String(<number>visibility / 1000) + 'km');
     }
 
     disconnectedCallback() { }
 
-    // static get observedAttributes() {
-    //     return ['color', 'type']
-    // }
+    static get observedAttributes() {
+        return [''];
+    }
 
-    // attributeChangedCallback(name, prev, curr) {
-    //     console.log(name, prev, curr);
-    // }
+    attributeChangedCallback(name: string, prev: string, curr: string) {
+    }
 }
