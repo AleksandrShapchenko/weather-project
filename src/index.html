@@ -55,47 +55,58 @@
             <p class="description"></p>
             <div class="details">
                 <ul class="details-list">
-                    <!-- <li><img alt="weather icon" id="weather-icon"></li>
-                    <li><img alt="wind arrow" id="wind-arrow"></li>
-                    <li><img alt="pressure icon" id="pressure-icon"></li>
-                    <li>ds</li>
-                    <li>ad</li>
-                    <li>ad</li> -->
                 </ul>
             </div>
         </div>
 
         <style>
             .time {
-                color: orange;
+                color: #f85527;
+                margin-bottom: 7px;
             }
 
             .temperature {
+                position: relative;
+                margin-top: 17px;
                 display: inline-flex;
-                background-color: rgba(255, 166, 0, 0.349);
-                width: 100px;
+                font-size: 35px;
+                width: 200px;
+            }
+
+            .temperature > .temp {
+                position: absolute;
+                top: -28px;
+                left: 50px;
             }
 
             :host {
                 display: inline-block;
                 padding: 10px;
-                background-color: aliceblue;
-                color: black;
-                border-radius: 28px;
+                background-color:rgba(0, 0, 0, 0.25);;
+                color: wheat;
+                border-radius: 20px;
+                width: 550px;
+                font-size: 16px;
             }
 
             .details-list {
                 display: flex;
                 flex-wrap: wrap;
                 list-style: none;
-                border-left: 2px solid orange;
+                border-left: 1px solid #f85527;
             }
 
             .details-list li {
+                position: relative;
                 flex-grow: 0;
                 flex-shrink: 0;
                 flex-basis: auto;
-                width: 33.3333333333%;
+                width: 25.3333333333%;
+            }
+
+            .details-list li > span {
+                position: absolute;
+                top: 8px;
             }
         </style>
     </template>

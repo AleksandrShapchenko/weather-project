@@ -102,12 +102,22 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 8000,
+            name: 'assets/[hash]-[name].[ext]'
+          }
+        }]
       }
     ]
   },
 
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.css', '.scss']
+    extensions: ['.tsx', '.ts', '.js', '.css', '.scss', '.png']
   },
 
   optimization: {
