@@ -76,11 +76,17 @@
             }
 
             :host {
-                display: inline-block;
+                display: block;
                 padding: 10px;
                 background-color: aliceblue;
                 color: black;
                 border-radius: 15px;
+                position: fixed;
+                top: calc(100% - 226px);
+                left: calc(100% - 405px);
+                z-index: 1050;
+                overflow: hidden;
+                outline: 0;
             }
 
             .details-list {
