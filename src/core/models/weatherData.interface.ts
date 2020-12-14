@@ -13,15 +13,19 @@ export interface WeatherData {
     dt: number;
     id: number;
     main: {
-        temp: number,
+        temp: number | string,
         feels_like: number,
         temp_min: number,
         temp_max: number,
-        pressure: number,
+        pressure: number | string,
+        humidity: number | string
     };
     name: string;
-    snow: {
-        '1h': number
+    rain?: {
+        '1h': number | string
+    }
+    snow?: {
+        '1h': number | string
     };
     sys: {
         type: number,
@@ -31,10 +35,10 @@ export interface WeatherData {
         sunset: number
     };
     timezone: number;
-    visibility: number;
+    visibility: number | string;
     weather: weather;
     wind: {
-        speed: number,
+        speed: number | string,
         deg: number,
     }
 }

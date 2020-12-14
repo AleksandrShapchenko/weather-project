@@ -33,13 +33,38 @@ export class ModalComponent extends HTMLElement {
         return `${hours}:${minutes} ${ampm}, ${monthDay}`;
     }
 
+    private appendLiElementTo(ul: HTMLUListElement, text: string, imgURL?: string) {
+        let img = document.createElement('img');
+
+        if(imgURL) {
+            img.style.display = "inline-block";
+            img.style.width = "25px";
+            img.style.height = "25px";
+            img.src = imgURL;
+        }
+
+        let li = document.createElement('li');
+        
+        if(imgURL) {
+            li.append(img);
+
+            let span = document.createElement('span');
+            span.innerHTML = text;
+            li.append(span);
+        } else {
+            li.innerHTML = text;
+        }
+
+        ul.append(li);
+    }
+
     connectedCallback() {
         const weather: WeatherData = JSON.parse(window.sessionStorage.getItem('weather'));
         const iconUrl: string = window.sessionStorage.getItem('weather-icon');
-        const date = this.getFormattedDate(this.dateService.getCurrDate(weather.dt));
+        const date = this.getFormattedDate(this.dateService.getCurrDate(weather?.dt));
         const location = {
-            city: weather.name,
-            country: weather.sys.country
+            city: weather?.name,
+            country: weather?.sys.country
         }
 
         this.attachShadow({
@@ -63,14 +88,28 @@ export class ModalComponent extends HTMLElement {
         img.style.height = "50px";
         img.src = iconUrl;
 
-        let temp = Math.round(weather.main.temp);
-        this.shadowRoot.querySelector('.temp').innerHTML = `<p><b>${temp}</b> &degC</p>`;
+        let temp = Math.round(<number>weather?.main.temp);
+        this.shadowRoot.querySelector('.temp').innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
         this.shadowRoot.querySelector('.description')
-            .innerHTML = `Feels like ${Math.round(weather.main.feels_like)}
-             &degC. ${weather.weather[0].main}. ${weather.weather[0].description}`;
+            .innerHTML = `Feels like ${Math.round(weather?.main.feels_like)}
+             &degC. ${weather?.weather[0].main}. ${weather?.weather[0].description}`;
         
-        let list = this.shadowRoot.querySelector('.details-list').children;
+        let { rain, snow, wind, main, visibility } = weather;
+
+        let details: HTMLUListElement = this.shadowRoot.querySelector<HTMLUListElement>('.details-list');
+
+        if (rain) {
+            this.appendLiElementTo(details, <string>rain["1h"] + 'mm/h', iconUrl);
+        } else if (snow) {
+            this.appendLiElementTo(details, <string>snow["1h"] + 'mm/h', iconUrl);
+        } 
+
+        this.appendLiElementTo(details, <string>wind.speed + 'm/s ESE');
+        this.appendLiElementTo(details, <string>main.pressure + 'hPa');
+        this.appendLiElementTo(details, 'Humidity: ' + <string>main.humidity + '%');
+        this.appendLiElementTo(details, 'Dew point: ' + <string>main.temp + '&deg C');
+        this.appendLiElementTo(details, 'Visibility: ' + new String(<number>visibility / 1000) + 'km');
     }
 
     disconnectedCallback() { }

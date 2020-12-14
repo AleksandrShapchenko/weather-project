@@ -91,7 +91,7 @@ export class ComponentSelect extends HTMLElement {
                 .then((response) => response.json())
                 .then((weather) => {
                     let temp = Math.round(weather.main.temp);
-                    temperatureElem.innerHTML = `<p><b>${temp}</b> &degC</p>`;
+                    temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
                     let desc = weather.weather[0].description.split(' ')
                         .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
