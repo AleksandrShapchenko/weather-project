@@ -1,5 +1,5 @@
 import { weatherReq, temperatureElem, descriptionOfTemperatureElem, iconWrapper } from '../../index';
-import { ModalComponent } from '../modal/modalComponent.class';
+import { ModalComponent } from '../modal/modal.component';
 
 export class ComponentSelect extends HTMLElement {
     constructor() {
@@ -20,11 +20,36 @@ export class ComponentSelect extends HTMLElement {
         })
     }
 
-    private refreshModalWindow() {
+    /**
+     * Refreshs modal window
+     */
+    private refreshModalWindow(): void {
         let modal: ModalComponent = document.querySelector('modal-component');
         modal.remove();
         let newModal = new ModalComponent();
         document.querySelector('.content-wrapper').after(newModal);
+    }
+
+    /**
+     * Changes selected slot on any name slot of the template
+     * @param slotName 
+     * @param option 
+     * @param selectedSlot 
+     */
+    private changeSelectedSlotOn(
+        slotName: string,
+        option: HTMLCollection,
+        selectedSlot: HTMLSlotElement): void {
+        option[this.selectedIndex].slot = slotName;
+
+        selectedSlot.slot = "selected"
+    }
+
+    /**
+     * Toggles list of options
+     */
+    private toggleListOfOptions(): void {
+        this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
     }
 
     connectedCallback() {
@@ -42,26 +67,20 @@ export class ComponentSelect extends HTMLElement {
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="last-item"]')
             .onclick = (e: MouseEvent) => {
-                option[this.selectedIndex].slot = "last-item";
-
-                let selectedSlot = e.target as HTMLSlotElement;
-                selectedSlot.slot = "selected";
+                this.changeSelectedSlotOn("last-item", option, e.target as HTMLSlotElement);
 
                 this.setSelectedIndex(option);
 
-                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.toggleListOfOptions();
         }
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]')
             .onclick = (e: MouseEvent) => {
-                option[this.selectedIndex].slot = "item";
-
-                let selectedSlot = e.target as HTMLSlotElement;
-                selectedSlot.slot = "selected";
+                this.changeSelectedSlotOn("item", option, e.target as HTMLSlotElement);
 
                 this.setSelectedIndex(option);
 
-                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.toggleListOfOptions();
         }
 
         this.shadowRoot.querySelector('slot[name="selected"]')
@@ -105,7 +124,7 @@ export class ComponentSelect extends HTMLElement {
         
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
             .onclick = () => {
-                this.shadowRoot.querySelector('.dropdown-list').classList.toggle('closed');
+                this.toggleListOfOptions();
         }
     }
 

@@ -1,9 +1,13 @@
-import { Position } from '../core/models/position.interface';
+import { Position } from '../models/position.interface';
+
+// import URL constants
+import { environment as baseIconURL } from '../../environments/icon';
+import { environment as baseWeatherURL } from '../../environments/weather';
+import { id } from '../../environments/appid';
 
 export class HTTPWeatherApiReq {
 
   constructor() {
-
   }
 
   /**
@@ -15,9 +19,9 @@ export class HTTPWeatherApiReq {
     let fetchedWeather: Promise<Response> = null;
 
     try {
-      fetchedWeather = fetch('http://api.openweathermap.org/data/2.5/weather?'
-        + `lat=${position.coords.latitude}&lon=${position.coords.longitude}&`
-        + 'units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636');
+      fetchedWeather = fetch(baseWeatherURL.baseURL +
+        `lat=${position.coords.latitude}&lon=${position.coords.longitude}&` +
+        `units=metric&appid=${id}`);
     } catch (error) {
       throw Error('Error occured with fetch data of weather by coords -> ' + error);
     }
@@ -35,8 +39,7 @@ export class HTTPWeatherApiReq {
     let fetchedWeather: Promise<Response> = null;
 
     try {
-      fetchedWeather = fetch('http://api.openweathermap.org/data/2.5/weather?'
-        + `q=${city}&units=metric&appid=e7aadd779ff9063f45cbf092bdfd1636`);
+      fetchedWeather = fetch(baseWeatherURL.baseURL + `q=${city}&units=metric&appid=${id}`);
     } catch (error) {
       throw Error('Error occured with fetch data of weather by city name -> ' + error);
     }
@@ -53,7 +56,7 @@ export class HTTPWeatherApiReq {
     let fetchedIconOfWeather: Promise<Response> = null;
 
     try {
-      fetchedIconOfWeather = fetch(`http://openweathermap.org/img/wn/${icon}@2x.png`);
+      fetchedIconOfWeather = fetch(baseIconURL.baseURL + `${icon}@2x.png`);
     } catch (error) {
       throw Error('Error occured with fetch icon of weather -> ' + error);
     }
