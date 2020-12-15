@@ -26,6 +26,7 @@ export class ComponentSelect extends HTMLElement {
     private refreshModalWindow(): void {
         let modal: ModalComponent = document.querySelector('modal-component');
         modal.remove();
+
         let newModal = new ModalComponent();
         document.querySelector('.content-wrapper').after(newModal);
     }
@@ -62,7 +63,7 @@ export class ComponentSelect extends HTMLElement {
         this.shadowRoot.append(content);
 
         const option = document.querySelector('#city').children;
-        
+
         this.setSelectedIndex(option);
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="last-item"]')
@@ -72,7 +73,7 @@ export class ComponentSelect extends HTMLElement {
                 this.setSelectedIndex(option);
 
                 this.toggleListOfOptions();
-        }
+            }
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]')
             .onclick = (e: MouseEvent) => {
@@ -81,54 +82,54 @@ export class ComponentSelect extends HTMLElement {
                 this.setSelectedIndex(option);
 
                 this.toggleListOfOptions();
-        }
+            }
 
         this.shadowRoot.querySelector('slot[name="selected"]')
             .addEventListener('slotchange', (e) => {
-            let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
+                let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
 
-            weatherReq.getWeatherByCityName(selectedCity)
-                .then((response) => response.json())
-                .then((weather) => {
-                    let temp = Math.round(weather.main.temp);
-                    temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
+                weatherReq.getWeatherByCityName(selectedCity)
+                    .then((response) => response.json())
+                    .then((weather) => {
+                        let temp = Math.round(weather.main.temp);
+                        temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
-                    let desc = weather.weather[0].description.split(' ')
-                        .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                    descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
-                       
-                    /* Set current data of weather into Session Storage */
-                    window.sessionStorage.setItem('weather', JSON.stringify(weather));
+                        let desc = weather.weather[0].description.split(' ')
+                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                        descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-                    return weather.weather[0].icon;
-                }).then((icon: string) => {
-                    return weatherReq.getIconOfWeather(icon)
-                })
-                .then((response) => response.blob())
-                .then((icon) => {
-                    if (!(iconWrapper.querySelector('img'))) {
-                        let img = document.createElement('img');
-                        iconWrapper.append(img);
-                        img.alt = "weather icon";
-                        img.src = URL.createObjectURL(icon);
-                    } else {
-                        let img = iconWrapper.querySelector('img');
-                        img.src = URL.createObjectURL(icon);
-                    }
-     
-                    window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
-                }).then(() => {
-                    this.refreshModalWindow();
-                });
+                        /* Set current data of weather into Session Storage */
+                        window.sessionStorage.setItem('weather', JSON.stringify(weather));
+
+                        return weather.weather[0].icon;
+                    }).then((icon: string) => {
+                        return weatherReq.getIconOfWeather(icon)
+                    })
+                    .then((response) => response.blob())
+                    .then((icon) => {
+                        if (!(iconWrapper.querySelector('img'))) {
+                            let img = document.createElement('img');
+                            iconWrapper.append(img);
+                            img.alt = "weather icon";
+                            img.src = URL.createObjectURL(icon);
+                        } else {
+                            let img = iconWrapper.querySelector('img');
+                            img.src = URL.createObjectURL(icon);
+                        }
+
+                        window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
+                    }).then(() => {
+                        this.refreshModalWindow();
+                    });
             })
-        
+
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
             .onclick = () => {
                 this.toggleListOfOptions();
-        }
+            }
     }
 
-    disconnectedCallback() {}
+    disconnectedCallback() { }
 
     static get observedAttributes(): Array<string> {
         return [];

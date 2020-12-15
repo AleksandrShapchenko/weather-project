@@ -10,7 +10,7 @@ export class ModalComponent extends HTMLElement {
     constructor() {
         super()
     }
-    
+
     /**
      * parses current date,
      * returns formatted date for modal
@@ -27,12 +27,12 @@ export class ModalComponent extends HTMLElement {
         let hours = date.getHours();
         let minutes: String = new String(date.getMinutes());
         let ampm = hours >= 12 ? 'pm' : 'am';
-        
+
         hours = hours % 12;
         hours = hours ? hours : 12;
 
         minutes = Number.parseInt(minutes.toString()) < 10 ? '0' + minutes : minutes;
-        
+
         return `${hours}:${minutes} ${ampm}, ${monthDay}`;
     }
 
@@ -47,10 +47,10 @@ export class ModalComponent extends HTMLElement {
         let img = document.createElement('img');
         let { wind } = JSON.parse(window.sessionStorage.getItem('weather'));
 
-        if(imgURL) {
+        if (imgURL) {
             img.style.width = "15%";
             img.src = imgURL;
-            
+
             if (rotate) {
                 img.style.width = "15px"
                 img.style.height = "15px"
@@ -60,7 +60,7 @@ export class ModalComponent extends HTMLElement {
 
         let li = document.createElement('li');
 
-        if(imgURL) {
+        if (imgURL) {
             li.append(img);
 
             let span = document.createElement('span');
@@ -125,7 +125,7 @@ export class ModalComponent extends HTMLElement {
         this.shadowRoot.querySelector('.description')
             .innerHTML = `<b>Feels like ${Math.round(weather?.main.feels_like)}&deg
              C. ${weather?.weather[0].main}. ${weather?.weather[0].description}</b>`;
-        
+
         let { rain, snow, wind, main, visibility } = weather;
 
         let details: HTMLUListElement = this.shadowRoot.querySelector<HTMLUListElement>('.details-list');
@@ -134,9 +134,9 @@ export class ModalComponent extends HTMLElement {
             this.appendLiElementTo(details, <string>rain["1h"] + 'mm/h', iconUrl);
         } else if (snow) {
             this.appendLiElementTo(details, <string>snow["1h"] + 'mm/h', iconUrl);
-        } 
+        }
 
-        this.appendLiElementTo(details, <string>wind.speed + 
+        this.appendLiElementTo(details, <string>wind.speed +
             ` m/s ${this.chooseDirectionOfWind(wind.deg)}`,
             arrowIcon.default, true);
         this.appendLiElementTo(details, <string>main.pressure + ' hPa', pressure.default);
@@ -144,6 +144,9 @@ export class ModalComponent extends HTMLElement {
         this.appendLiElementTo(details, 'Dew point: ' + new String(Math.round(<number>main.temp)) +
             '&deg C');
         this.appendLiElementTo(details, 'Visibility: ' + new String(<number>visibility / 1000) + 'km');
+        setTimeout(() => {
+            this.style.opacity = '1';
+        }, 0);
     }
 
     disconnectedCallback() { }

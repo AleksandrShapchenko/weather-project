@@ -45,20 +45,22 @@
     </main>
 
     <template id="modalWindow">
-        <div class="time"></div>
-        <div class="location"></div>
-
-        <div class="temperature">
-            <div class="icon-wrapper"></div>
-            <div class="temp"></div>
-        </div>
-
-        <div class="detailsOfWeather">
-            <p class="description"></p>
-            <div class="details">
-                <ul class="details-list">
-                </ul>
+        <div class="content">
+            <div class="time"></div>
+            <div class="location"></div>
+    
+            <div class="temperature">
+                <div class="icon-wrapper"></div>
+                <div class="temp"></div>
             </div>
+    
+            <div class="detailsOfWeather">
+                <p class="description"></p>
+                <div class="details">
+                    <ul class="details-list">
+                    </ul>
+                </div>
+            </div>  
         </div>
 
         <style>
@@ -87,14 +89,19 @@
             }
 
             :host {
+                position: absolute;
+                top: calc(100% - 250px);
+                left: calc(100% - 365px);
                 display: block;
-                padding: 10px;
+                padding: 15px;
                 background-color: rgba(0, 0, 0, 0.25);
                 ;
                 color: aliceblue;
                 border-radius: 20px;
-                width: 550px;
-                font-size: 16px;
+                width: 350px;
+                font-size: 12px;
+                opacity: 0;
+                transition: 1s;
             }
 
             .details-list {
@@ -102,6 +109,7 @@
                 flex-wrap: wrap;
                 list-style: none;
                 border-left: 1px solid #f85527;
+                margin-bottom: 0;
             }
 
             .details-list li {
@@ -109,7 +117,7 @@
                 flex-grow: 0;
                 flex-shrink: 0;
                 flex-basis: auto;
-                width: 25.3333333333%;
+                width: 33.334%;
 
                 margin-bottom: 5px;
             }
