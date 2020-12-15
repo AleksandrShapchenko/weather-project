@@ -105,11 +105,12 @@ module.exports = {
       },
       {
         test: /\.(png|jp(e*)g|svg)$/,
+
         use: [{
-          loader: 'url-loader',
+          loader: 'file-loader',
           options: {
             limit: 8000,
-            name: 'assets/[hash]-[name].[ext]'
+            name: 'assets/[name].png'
           }
         }]
       }
