@@ -31,11 +31,13 @@ export class ComponentSelect extends HTMLElement {
 
         new Promise((resolve, reject) => {
             setTimeout(() => {
-                modal.remove();
+                const parentModal = modal.parentElement;
+                parentModal.removeChild(modal);
+                // modal.remove();
                 let newModal = new ModalComponent();
                 document.querySelector('.content-wrapper').after(newModal);
                 resolve('Refreshed!');
-            }, 1000);
+            }, 500);
         })
     }
 
