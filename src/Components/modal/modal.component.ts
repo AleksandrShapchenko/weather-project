@@ -144,9 +144,13 @@ export class ModalComponent extends HTMLElement {
         this.appendLiElementTo(details, 'Dew point: ' + new String(Math.round(<number>main.temp)) +
             '&deg C');
         this.appendLiElementTo(details, 'Visibility: ' + new String(<number>visibility / 1000) + 'km');
-        setTimeout(() => {
-            this.style.opacity = '1';
-        }, 0);
+
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.style.opacity = '1';
+                resolve('done!')
+            }, 10);
+        })
     }
 
     disconnectedCallback() { }

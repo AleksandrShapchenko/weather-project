@@ -23,12 +23,20 @@ export class ComponentSelect extends HTMLElement {
     /**
      * Refreshs modal window
      */
-    private refreshModalWindow(): void {
+    private refreshModalWindow() {
         let modal: ModalComponent = document.querySelector('modal-component');
-        modal.remove();
 
-        let newModal = new ModalComponent();
-        document.querySelector('.content-wrapper').after(newModal);
+        modal.style.opacity = "0";
+        modal.style.transition = "opacity 1s";
+
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                modal.remove();
+                let newModal = new ModalComponent();
+                document.querySelector('.content-wrapper').after(newModal);
+                resolve('Refreshed!');
+            }, 1000);
+        })
     }
 
     /**
