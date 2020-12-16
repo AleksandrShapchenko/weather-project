@@ -37,41 +37,28 @@ export class ModalComponent extends HTMLElement {
     }
 
     /**
-     * Appends li element to
-     * @param ul 
-     * @param text 
-     * @param [imgURL] 
-     * @param [rotate] 
+     * Sets data on modal window
+     * @returns function for add data on details block of the Modal Window
      */
-    private appendLiElementTo(ul: HTMLUListElement, text: string, imgURL?: string, rotate?: boolean) {
-        let img = document.createElement('img');
-        let { wind } = JSON.parse(window.sessionStorage.getItem('weather'));
+    private setDetailsOnModalWindow(): Function {
+        let details: HTMLUListElement = this.shadowRoot.querySelector<HTMLUListElement>('.details-list');
 
-        if (imgURL) {
-            img.style.width = "20%";
-            img.src = imgURL;
+        return (text: string, img?: HTMLImageElement) => {
+            let li = document.createElement('li');
 
-            if (rotate) {
-                img.style.width = "15px";
-                img.style.height = "15px";
-                img.style.transform = `rotate(${wind.deg}deg)`;
+            if (img) {
+                li.append(img);
+
+                let span = document.createElement('span');
+                span.innerHTML = text;
+
+                li.append(span);
+            } else {
+                li.innerHTML = text;
             }
+
+            details.append(li);
         }
-
-        let li = document.createElement('li');
-
-        if (imgURL) {
-            li.append(img);
-
-            let span = document.createElement('span');
-            span.innerHTML = text;
-
-            li.append(span);
-        } else {
-            li.innerHTML = text;
-        }
-
-        ul.append(li);
     }
 
     /**
@@ -93,6 +80,38 @@ export class ModalComponent extends HTMLElement {
         return direction[w];
     }
 
+    /**
+     * Creates new image
+     * @param URL 
+     * @param alt 
+     * @param width 
+     * @param height 
+     * @param [rotate] 
+     * @param [deg] 
+     * @returns new image 
+     */
+    private createNewImage(URL: string, alt: string, 
+        width: string, height: string, 
+        top?: string, left?: string,
+        rotate?: boolean, deg?: number): HTMLImageElement {
+        let img = document.createElement('img');
+
+        img.src = URL;
+        img.alt = alt;
+
+        img.style.width = width;
+        img.style.height = height;
+
+        img.style.top = top;
+        img.style.left = left;
+
+        if (rotate) {
+            img.style.transform = `rotate(${deg}deg)`;
+        }
+
+        return img;
+    }
+
     connectedCallback() {
         const weather: WeatherData = JSON.parse(window.sessionStorage.getItem('weather'));
         const iconUrl: string = window.sessionStorage.getItem('weather-icon');
@@ -106,18 +125,17 @@ export class ModalComponent extends HTMLElement {
         let clonedTemplateContent = template.content.cloneNode(true);
         this.shadowRoot.append(clonedTemplateContent);
 
+
         let time: HTMLDivElement = this.shadowRoot.querySelector('.time');
         time.innerHTML = `<time>${date}</time>`;
 
         let loc: HTMLDivElement = this.shadowRoot.querySelector('.location');
         loc.innerHTML = `<b>${weather?.name}, ${weather?.sys.country}</b>`;
 
-        let img = document.createElement('img');
-        this.shadowRoot.querySelector('.icon-wrapper').append(img);
-        img.alt = "weather icon";
-        img.style.width = "50px";
-        img.style.height = "50px";
-        img.src = iconUrl;
+        let weatherImg: HTMLImageElement = this.createNewImage(
+            iconUrl, "weather icon", "50px", "50px"
+        );
+        this.shadowRoot.querySelector('.icon-wrapper').append(weatherImg);
 
         let temp = Math.round(<number>weather?.main.temp);
         this.shadowRoot.querySelector('.temp').innerHTML = `<p><b>${temp}&deg</b> C</p>`;
@@ -126,25 +144,33 @@ export class ModalComponent extends HTMLElement {
             .innerHTML = `<b>Feels like ${Math.round(weather?.main.feels_like)}&deg
              C. ${weather?.weather[0].main}. ${weather?.weather[0].description}</b>`;
 
+
         let { rain, snow, wind, main, visibility } = weather;
 
-        let details: HTMLUListElement = this.shadowRoot.querySelector<HTMLUListElement>('.details-list');
+        let addData: Function = this.setDetailsOnModalWindow();
 
         if (rain) {
-            this.appendLiElementTo(details, <string>rain["1h"] + 'mm/h', iconUrl);
+            addData(<string>rain["1h"] + 'mm/h', this.createNewImage(
+                iconUrl, "weather-image", "30px", "30px", "-5px", "-28px"
+            ));
         } else if (snow) {
-            this.appendLiElementTo(details, <string>snow["1h"] + 'mm/h', iconUrl);
+            addData(<string>snow["1h"] + 'mm/h', this.createNewImage(
+                iconUrl, "weather-image", "30px", "30px", "-8px", "-28px"
+            ));
         }
 
-        this.appendLiElementTo(details, <string>wind.speed +
-            ` m/s ${this.chooseDirectionOfWind(wind.deg)}`,
-            arrowIcon.default, true);
-        this.appendLiElementTo(details, <string>main.pressure + ' hPa', pressure.default);
-        this.appendLiElementTo(details, 'Humidity: ' + <string>main.humidity + '%');
-        this.appendLiElementTo(details, 'Dew point: ' + new String(Math.round(<number>main.temp)) +
-            '&deg C');
-        this.appendLiElementTo(details, 'Visibility: ' + new String(<number>visibility / 1000) + 'km');
+        addData(<string>wind.speed + 
+            ` m/s ${this.chooseDirectionOfWind(wind.deg)}`, this.createNewImage(
+                arrowIcon.default, "arrow-image", "15px", "15px", "-1px", "-21px", true, wind.deg
+            ));
+        addData(<string>main.pressure + ' hPa', this.createNewImage(
+            pressure.default, "pressure-image", "20px", "20px", "-5px", "-24px"
+        ));
+        addData('Humidity: ' + <string>main.humidity + '%');
+        addData('Dew point: ' + new String(Math.round(<number>main.temp)) + '&deg C');
+        addData('Visibility: ' + new String(<number>visibility / 1000) + 'km');
 
+        
         new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.style.opacity = '1';
