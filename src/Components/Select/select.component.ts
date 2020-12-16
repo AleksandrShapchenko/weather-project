@@ -24,7 +24,7 @@ export class ComponentSelect extends HTMLElement {
      * Deletes modal window
      */
     private deleteModalWindow() {
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             let modal: ModalComponent = document.querySelector('modal-component');
 
             if (modal) {

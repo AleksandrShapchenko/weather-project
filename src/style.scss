@@ -23,6 +23,7 @@ main {
 .content-wrapper {
     display: grid;
     grid-template-rows: 1fr 1fr;
+    padding-top: 200px;
 
     .content-citiesAndImage-wrapper {
         display: grid;
