@@ -21,23 +21,22 @@ export class ComponentSelect extends HTMLElement {
     }
 
     /**
-     * Refreshs modal window
+     * Deletes modal window
      */
-    private refreshModalWindow() {
-        let modal: ModalComponent = document.querySelector('modal-component');
-
-        modal.style.opacity = "0";
-        modal.style.transition = "opacity 1s";
-
+    private deleteModalWindow() {
         new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const parentModal = modal.parentElement;
-                parentModal.removeChild(modal);
-                // modal.remove();
-                let newModal = new ModalComponent();
-                document.querySelector('.content-wrapper').after(newModal);
-                resolve('Refreshed!');
-            }, 500);
+            let modal: ModalComponent = document.querySelector('modal-component');
+
+            if (modal) {
+                modal.style.opacity = "0";
+                modal.style.transition = "opacity 1s";
+
+                setTimeout(() => {
+                    modal.remove(); // remove from DOM
+                    modal = null; // remove link on the object of Modal Window
+                    resolve(true); // complete Promise
+                }, 1000);
+            }
         })
     }
 
@@ -101,6 +100,8 @@ export class ComponentSelect extends HTMLElement {
                 weatherReq.getWeatherByCityName(selectedCity)
                     .then((response) => response.json())
                     .then((weather) => {
+                        this.deleteModalWindow();
+
                         let temp = Math.round(weather.main.temp);
                         temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
@@ -129,8 +130,10 @@ export class ComponentSelect extends HTMLElement {
 
                         window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
                     }).then(() => {
-                        this.refreshModalWindow();
-                    });
+                        // create new Modal Window for new information of Weather
+                        let newModal: ModalComponent = new ModalComponent();
+                        document.querySelector('.content-wrapper').after(newModal);
+                    })
             })
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')

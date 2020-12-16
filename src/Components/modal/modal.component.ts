@@ -48,12 +48,12 @@ export class ModalComponent extends HTMLElement {
         let { wind } = JSON.parse(window.sessionStorage.getItem('weather'));
 
         if (imgURL) {
-            img.style.width = "15%";
+            img.style.width = "20%";
             img.src = imgURL;
 
             if (rotate) {
-                img.style.width = "15px"
-                img.style.height = "15px"
+                img.style.width = "15px";
+                img.style.height = "15px";
                 img.style.transform = `rotate(${wind.deg}deg)`;
             }
         }
@@ -149,7 +149,7 @@ export class ModalComponent extends HTMLElement {
             setTimeout(() => {
                 this.style.opacity = '1';
                 resolve('done!')
-            }, 10);
+            }, 400);
         })
     }
 
