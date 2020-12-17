@@ -15,18 +15,15 @@ export class HTTPWeatherApiReq {
      * @param position 
      * @returns weather by coords 
      */
-  getWeatherByCoords(position: Position): Promise<Response> {
-    let fetchedWeather: Promise<Response> = null;
-
+  async getWeatherByCoords(position: Position): Promise<Response> {
     try {
-      fetchedWeather = fetch(baseWeatherURL.baseURL +
+      // наверное вся проблема с селектом была здесь (нужно вывести fetch на общий патерн приложения)
+      return await fetch(baseWeatherURL.baseURL +
         `lat=${position.coords.latitude}&lon=${position.coords.longitude}&` +
         `units=metric&appid=${id}`);
     } catch (error) {
       throw Error('Error occured with fetch data of weather by coords -> ' + error);
     }
-
-    return fetchedWeather;
   }
 
   /**
@@ -34,17 +31,12 @@ export class HTTPWeatherApiReq {
    * @param city 
    * @returns  
    */
-
-  getWeatherByCityName(city: string): Promise<Response> {
-    let fetchedWeather: Promise<Response> = null;
-
+  async getWeatherByCityName(city: string): Promise<Response> {
     try {
-      fetchedWeather = fetch(baseWeatherURL.baseURL + `q=${city}&units=metric&appid=${id}`);
-    } catch (error) {
+      return await fetch(baseWeatherURL.baseURL + `q=${city}&units=metric&appid=${id}`);
+      } catch (error) {
       throw Error('Error occured with fetch data of weather by city name -> ' + error);
     }
-
-    return fetchedWeather;
   }
 
   /**
@@ -52,16 +44,12 @@ export class HTTPWeatherApiReq {
  * @param icon 
  * @returns icon of weather 
  */
-  getIconOfWeather(icon: string): Promise<Response> {
-    let fetchedIconOfWeather: Promise<Response> = null;
-
+  async getIconOfWeather(icon: string): Promise<Response> {
     try {
-      fetchedIconOfWeather = fetch(baseIconURL.baseURL + `${icon}@2x.png`);
+      return await fetch(baseIconURL.baseURL + `${icon}@2x.png`);
     } catch (error) {
       throw Error('Error occured with fetch icon of weather -> ' + error);
     }
-
-    return fetchedIconOfWeather;
   }
   
 }

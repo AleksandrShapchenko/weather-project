@@ -28,14 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обьявление компонента модалки
     customElements.define('modal-component', ModalComponent);
 
+    let select: ComponentSelect = document.querySelector('component-select');
+
     positionService.getCurrentUserPosition()
         .then((position) => weatherReq.getWeatherByCoords(position))
         .then((response) => response.json())
         .then((weather) => {         
             const optionElem = document.createElement('option');
 
-            let selectedItem = document.querySelector('option[slot="selected"]');
+            let selectedItem = document.querySelector<HTMLOptionElement>('option[slot="selected"]');
             selectedItem.slot = "item";
+
+            select.selectedOptions.previousSelectedOption = selectedItem;
 
             optionElem.slot = "selected";
             optionElem.innerHTML = weather.name;
@@ -44,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             selectedItem.before(optionElem);
 
+            select.selectedOptions.currentSelectedOption = optionElem;
+            select.selectedOptions.currentSelectedOption.disabled = true;
+
             let temp = Math.round(weather.main.temp);
             temperatureElem.innerHTML = `<p><b>${temp}</b> C</p>`;
 
@@ -51,8 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
             descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
             
-            return weather.weather[0].icon;
+            /* Set current data of weather into Session Storage */
+            window.sessionStorage.setItem('weather', JSON.stringify(weather));
 
+            return weather.weather[0].icon;
         }).then((icon: string) => {
             return weatherReq.getIconOfWeather(icon)
         })
@@ -67,6 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 let img = iconWrapper.querySelector('img');
                 img.src = URL.createObjectURL(icon);
             }
+
+            window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
+        }).then(() => {
+            holdSelect().then((hold: boolean) => {
+                select.selectedOptions.currentSelectedOption.disabled = hold;
+            })
         });
 
     // Запись последнего выбранного города в Local Storage
@@ -74,4 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let weather: WeatherData = JSON.parse(window.sessionStorage.getItem('weather'));
         window.localStorage.setItem('city', weather.name);
     });
+
+    function holdSelect() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(false);
+            }, 1500)
+        })
+    }
 })

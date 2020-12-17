@@ -171,11 +171,16 @@ export class ModalComponent extends HTMLElement {
         addData('Visibility: ' + new String(<number>visibility / 1000) + 'km');
 
         
-        new Promise((resolve, reject) => {
+        this.showModalWindow().then((setOpacity: string) => {
+            this.style.opacity = setOpacity;
+        });
+    }
+
+    private showModalWindow() {
+        return new Promise((resolve, reject) => {
             setTimeout(() => {
-                this.style.opacity = '1';
-                resolve('done!')
-            }, 400);
+                resolve('1');
+            }, 1000);
         })
     }
 

@@ -6,25 +6,19 @@ export class ComponentSelect extends HTMLElement {
         super();
     }
 
-    selectedIndex: number;
-
     /**
-     * Sets selected index
-     * @param option 
+     * Selected options of component select
      */
-    private setSelectedIndex(option: HTMLCollection): void {
-        [].forEach.call(option, (item: HTMLOptionElement, index: number): void => {
-            if (item.slot == "selected") {
-                this.selectedIndex = index;
-            }
-        })
+    selectedOptions = {
+        previousSelectedOption: document.createElement('option'),
+        currentSelectedOption: document.createElement('option')
     }
 
     /**
      * Deletes modal window
      */
     private deleteModalWindow() {
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             let modal: ModalComponent = document.querySelector('modal-component');
 
             if (modal) {
@@ -32,27 +26,25 @@ export class ComponentSelect extends HTMLElement {
                 modal.style.transition = "opacity 1s";
 
                 setTimeout(() => {
-                    modal.remove(); // remove from DOM
-                    modal = null; // remove link on the object of Modal Window
-                    resolve(true); // complete Promise
+                    resolve(modal); // complete Promise
                 }, 1000);
             }
         })
     }
 
     /**
-     * Changes selected slot on any name slot of the template
+     * Changes selected slot on
      * @param slotName 
-     * @param option 
      * @param selectedSlot 
      */
     private changeSelectedSlotOn(
         slotName: string,
-        option: HTMLCollection,
-        selectedSlot: HTMLSlotElement): void {
-        option[this.selectedIndex].slot = slotName;
+        selectedSlot: HTMLSlotElement) {
+        this.selectedOptions.previousSelectedOption = this.selectedOptions.currentSelectedOption;
+        this.selectedOptions.currentSelectedOption.slot = slotName;
 
-        selectedSlot.slot = "selected"
+        selectedSlot.slot = "selected";
+        this.selectedOptions.currentSelectedOption = document.querySelector<HTMLOptionElement>('option[slot="selected"]');
     }
 
     /**
@@ -71,75 +63,89 @@ export class ComponentSelect extends HTMLElement {
         const content = template.content.cloneNode(true);
         this.shadowRoot.append(content);
 
-        const option = document.querySelector('#city').children;
-
-        this.setSelectedIndex(option);
-
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="last-item"]')
-            .onclick = (e: MouseEvent) => {
-                this.changeSelectedSlotOn("last-item", option, e.target as HTMLSlotElement);
+            .addEventListener('click', (e: MouseEvent) => {
+                this.changeSelectedSlotOn("last-item", e.target as HTMLSlotElement);
 
-                this.setSelectedIndex(option);
+                this.selectedOptions.currentSelectedOption.disabled = true;
 
                 this.toggleListOfOptions();
-            }
+            })
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="item"]')
-            .onclick = (e: MouseEvent) => {
-                this.changeSelectedSlotOn("item", option, e.target as HTMLSlotElement);
+            .addEventListener('click', (e: MouseEvent) => {
+                this.changeSelectedSlotOn("item", e.target as HTMLSlotElement);
 
-                this.setSelectedIndex(option);
+                this.selectedOptions.currentSelectedOption.disabled = true;
 
                 this.toggleListOfOptions();
-            }
+            });
 
         this.shadowRoot.querySelector('slot[name="selected"]')
             .addEventListener('slotchange', (e) => {
-                let selectedCity = (option[this.selectedIndex] as HTMLOptionElement).text;
+                let selectedCity = this.selectedOptions.currentSelectedOption.text;
 
-                weatherReq.getWeatherByCityName(selectedCity)
-                    .then((response) => response.json())
-                    .then((weather) => {
-                        this.deleteModalWindow();
+                if (selectedCity) {
+                    weatherReq.getWeatherByCityName(selectedCity)
+                        .then((response) => response.json())
+                        .then((weather) => {
 
-                        let temp = Math.round(weather.main.temp);
-                        temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
+                            this.deleteModalWindow().then((modal: ModalComponent) => {
+                                modal.remove(); // remove from DOM
+                                modal = null; // remove link on the object of Modal Window
+                            });
 
-                        let desc = weather.weather[0].description.split(' ')
-                            .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
-                        descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
+                            let temp = Math.round(weather.main.temp);
+                            temperatureElem.innerHTML = `<p><b>${temp}&deg</b> C</p>`;
 
-                        /* Set current data of weather into Session Storage */
-                        window.sessionStorage.setItem('weather', JSON.stringify(weather));
+                            let desc = weather.weather[0].description.split(' ')
+                                .map((word: string) => word[0].toUpperCase() + word.substring(1)).join(' ');
+                            descriptionOfTemperatureElem.innerHTML = `<p>${desc}</p>`;
 
-                        return weather.weather[0].icon;
-                    }).then((icon: string) => {
-                        return weatherReq.getIconOfWeather(icon)
-                    })
-                    .then((response) => response.blob())
-                    .then((icon) => {
-                        if (!(iconWrapper.querySelector('img'))) {
-                            let img = document.createElement('img');
-                            iconWrapper.append(img);
-                            img.alt = "weather icon";
-                            img.src = URL.createObjectURL(icon);
-                        } else {
-                            let img = iconWrapper.querySelector('img');
-                            img.src = URL.createObjectURL(icon);
-                        }
+                            /* Set current data of weather into Session Storage */
+                            window.sessionStorage.setItem('weather', JSON.stringify(weather));
 
-                        window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
-                    }).then(() => {
-                        // create new Modal Window for new information of Weather
-                        let newModal: ModalComponent = new ModalComponent();
-                        document.querySelector('.content-wrapper').after(newModal);
-                    })
-            })
+                            return weather.weather[0].icon;
+                        }).then((icon: string) => {
+                            return weatherReq.getIconOfWeather(icon)
+                        })
+                        .then((response) => response.blob())
+                        .then((icon) => {
+                            if (!(iconWrapper.querySelector('img'))) {
+                                let img = document.createElement('img');
+                                iconWrapper.append(img);
+                                img.alt = "weather icon";
+                                img.src = URL.createObjectURL(icon);
+                            } else {
+                                let img = iconWrapper.querySelector('img');
+                                img.src = URL.createObjectURL(icon);
+                            }
+
+                            window.sessionStorage.setItem('weather-icon', URL.createObjectURL(icon));
+                        }).then(() => {
+                            // create new Modal Window for new information of Weather
+                            let newModal: ModalComponent = new ModalComponent();
+                            document.querySelector('.content-wrapper').after(newModal);
+                        })
+                }
+
+                this.holdSelect().then((re: boolean) => {
+                    this.selectedOptions.currentSelectedOption.disabled = re;
+                })
+            });
 
         this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="selected"]')
-            .onclick = () => {
+            .addEventListener('click', () => {
                 this.toggleListOfOptions();
-            }
+            });
+    }
+
+    private holdSelect() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(false);
+            }, 1500)
+        })
     }
 
     disconnectedCallback() { }
